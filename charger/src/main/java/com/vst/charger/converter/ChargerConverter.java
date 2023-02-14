@@ -2,8 +2,9 @@ package com.vst.charger.converter;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+
+import com.vst.charger.dto.ChargerDto;
 import com.vst.charger.model.Charger;
-import com.vst.chargerdto.ChargerDto;
 
 @Component
 public class ChargerConverter {

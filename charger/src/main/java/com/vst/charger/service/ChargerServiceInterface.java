@@ -1,21 +1,23 @@
 package com.vst.charger.service;
 
 import java.util.List;
+
+import com.vst.charger.dto.ChargerDto;
+import com.vst.charger.exception.ChargerNotFoundException;
 import com.vst.charger.model.Charger;
-import com.vst.chargerdto.ChargerDto;
 
 
 public interface ChargerServiceInterface {
 	
 	
-	public ChargerDto add(ChargerDto chargerDto);
+	public String add(ChargerDto chargerDto);
 	
-	public Charger show(String chargerId);
+	public Charger show(String chargerId) ;
 	
 	public List<Charger> showAll();
 	
-	public boolean edit(String chargerId, ChargerDto chargerDto);
+	public void edit(String chargerId, ChargerDto chargerDto);
 	
-	public boolean remove(String chargerId);
+	public void remove(String chargerId);
 
 }

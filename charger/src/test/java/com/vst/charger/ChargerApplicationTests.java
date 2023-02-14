@@ -12,10 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.vst.charger.converter.ChargerConverter;
+import com.vst.charger.dto.ChargerDto;
 import com.vst.charger.model.Charger;
 import com.vst.charger.repository.ChargerRepository;
 import com.vst.charger.service.ChargerServiceImpl;
-import com.vst.chargerdto.ChargerDto;
 
 @SpringBootTest
  class ChargerApplicationTests {

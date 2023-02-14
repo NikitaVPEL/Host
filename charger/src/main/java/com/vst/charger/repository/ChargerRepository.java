@@ -13,9 +13,9 @@ import com.vst.charger.model.Charger;
 public interface ChargerRepository extends MongoRepository<Charger, String> {
 	
 	// create method to find details by id and details are deleted or not
-	public Charger findByChargerIdAndIsActiveTrue(String chargerId);
+	 Charger findByChargerIdAndIsActiveTrue(String chargerId);
 
 	// create method to find all the available details and details are deleted or not
-	public List<Charger> findAllByIsActiveTrue();
+	List<Charger> findAllByIsActiveTrue();
 
 }

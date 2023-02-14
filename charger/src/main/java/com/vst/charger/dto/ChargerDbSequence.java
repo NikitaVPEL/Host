@@ -1,4 +1,4 @@
-package com.vst.chargerdto;
+package com.vst.charger.dto;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

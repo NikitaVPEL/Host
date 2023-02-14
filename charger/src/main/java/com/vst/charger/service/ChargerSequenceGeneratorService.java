@@ -13,8 +13,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import com.vst.chargerdto.ChargerDto;
-import com.vst.chargerdto.ChargerDbSequence;
+import com.vst.charger.dto.ChargerDbSequence;
+import com.vst.charger.dto.ChargerDto;
 
 @Service
 public class ChargerSequenceGeneratorService {
