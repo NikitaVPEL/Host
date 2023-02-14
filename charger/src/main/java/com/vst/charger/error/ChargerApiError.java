@@ -2,9 +2,12 @@ package com.vst.charger.error;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,6 +17,24 @@ import com.vst.charger.exception.ChargerNotFoundException;
 
 @RestControllerAdvice
 public class ChargerApiError {
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> validDataNotFound(MethodArgumentNotValidException ex){
+		
+    	Map<String, String> errorMap = new HashMap<>();
+    	
+    	  List<FieldError>errors= ex.getFieldErrors();
+    	  
+    	for(FieldError error : errors) {
+    		errorMap.put(error.getField(), error.getDefaultMessage());
+    	}
+//    	ex.getBindingResult().getFieldError().forEach(error ->{
+//    		errorMap.put(error.getField(),error.getDefaultMessage());
+//    	});
+    	return errorMap;
+    	
+    }
 	
 
 	@ExceptionHandler(ChargerNotFoundException.class)

@@ -21,13 +21,13 @@ public class ChargerDto {
 	
 	@Id
 	private String chargerId;
-	@NotNull
+	@NotNull(message = "name should not be null")
 	private String chargerName;
 	@NotNull
 	private String chargerInputVoltage;
-	@NotNull
+	@NotNull(message = "not null")
 	private String chargerOutputVoltage;
-	@NotNull
+	@NotNull(message = "not null")
 	private String chargerMinInputAmpere;
 	@NotNull
 	private String chargerMaxInputAmpere;

@@ -1,4 +1,4 @@
-package com.vst.charger.exception;
+ package com.vst.charger.exception;
 
 public class IdNotAcceptableException extends RuntimeException {
 
