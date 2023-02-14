@@ -12,7 +12,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Document(collection = "db_Sequence")
-public class DbSequence {
+public class ChargerDbSequence {
 	
 	@Id
 	private String id;

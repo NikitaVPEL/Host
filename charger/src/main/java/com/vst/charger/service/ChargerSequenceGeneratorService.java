@@ -13,11 +13,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import com.vst.chargerdto.ChargerDTO;
-import com.vst.chargerdto.DbSequence;
+import com.vst.chargerdto.ChargerDto;
+import com.vst.chargerdto.ChargerDbSequence;
 
 @Service
-public class DbService {
+public class ChargerSequenceGeneratorService {
 	
 	 @Autowired
 	    private MongoOperations mongoOperations;
@@ -29,10 +29,10 @@ public class DbService {
 		 // it will update the sequence no. by 1
 		 Update update =new Update().inc("seq", 1);
 		 
-		 DbSequence counter = mongoOperations
+		 ChargerDbSequence counter = mongoOperations
 	                .findAndModify(query,
 	                        update, options().returnNew(true).upsert(true),
-	                        DbSequence.class);
+	                        ChargerDbSequence.class);
 		 
 		 return !Objects.isNull(counter) ? counter.getSeq() : 1;
 		 
@@ -41,7 +41,7 @@ public class DbService {
 	 public String idGenerator() {
 			Date dNow = new Date();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("MMddyyyy_HHmmss");
-			return dateFormat.format(dNow) + "_" + getSequenceNumber(ChargerDTO.SEQUENCE_NAME);
+			return dateFormat.format(dNow) + "_" + getSequenceNumber(ChargerDto.SEQUENCE_NAME);
 			
 	 }
 

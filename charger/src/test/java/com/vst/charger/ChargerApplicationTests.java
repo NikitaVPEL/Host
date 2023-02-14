@@ -1,9 +1,8 @@
 package com.vst.charger;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.DynamicTest.stream;
-import static org.mockito.Mockito.when;import java.util.stream.Collector;
+import static org.mockito.Mockito.when;
+
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,7 +15,7 @@ import com.vst.charger.converter.ChargerConverter;
 import com.vst.charger.model.Charger;
 import com.vst.charger.repository.ChargerRepository;
 import com.vst.charger.service.ChargerServiceImpl;
-import com.vst.chargerdto.ChargerDTO;
+import com.vst.chargerdto.ChargerDto;
 
 @SpringBootTest
  class ChargerApplicationTests {
@@ -55,9 +54,9 @@ import com.vst.chargerdto.ChargerDTO;
 		    charger1.setCreatedBy("User1");
 		    charger1.setModifiedBy("User1");
 		    charger1.setActive(true);
-		    ChargerDTO chargerDTO = converter.entityToDto(charger1);
+		    ChargerDto chargerDto = converter.entityToDto(charger1);
 		    when(repository.save(charger1)).thenReturn(charger1);
-			assertEquals("Data stored successfully", service.saveDetails(chargerDTO));
+			assertEquals("Data stored successfully", service.add(chargerDto));
 		
 		}
 		
@@ -69,7 +68,7 @@ import com.vst.chargerdto.ChargerDTO;
 							"No","User1","User1","User1","User1",true), new Charger("C001","Fast Charger","100V","200V","5A","10A","7A","50Hz",
 							"60Hz","IP55","Wall Mount","Yes","Yes","No","No","Yes","Yes",
 								"No","User1","User1","User1","User1",true)).collect(Collectors.toList()));
-			assertEquals(2, service.getAllDetails().size());
+			assertEquals(2, service.showAll().size());
 		
 		}
 //		

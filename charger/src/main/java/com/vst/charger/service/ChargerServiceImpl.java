@@ -8,89 +8,56 @@ import com.vst.charger.converter.ChargerConverter;
 import com.vst.charger.exception.ChargerException;
 import com.vst.charger.model.Charger;
 import com.vst.charger.repository.ChargerRepository;
-import com.vst.chargerdto.ChargerDTO;
+import com.vst.chargerdto.ChargerDto;
 
 @Service
-public class ChargerServiceImpl implements ChargerService {
+public class ChargerServiceImpl implements ChargerServiceInterface {
 
 	@Autowired
-	ChargerRepository repository;
+	ChargerRepository chargerRepository;
 
 	@Autowired
-	ChargerConverter converter;
+	ChargerConverter chargerConverter;
 
 	@Autowired
-	DbService dbService;
+	ChargerSequenceGeneratorService chargerSequenceGeneratorService;
 
-	/**
-	 * this method is save the details in DB using repository it auto generate the
-	 * id and isActiveStatus true
-	 */
+
 	@Override
 	@Transactional
-	public String saveDetails(ChargerDTO chargerDTO) {
+	public ChargerDto add(ChargerDto chargerDto) {
 
-		chargerDTO.setChargerId(dbService.idGenerator());
-		chargerDTO.setActive(true);
-		Charger charger = converter.dtoToEntity(chargerDTO);
+		chargerDto.setChargerId(chargerSequenceGeneratorService.idGenerator());
+		chargerDto.setActive(true);
+		Charger charger = chargerConverter.dtoToEntity(chargerDto);
 
-		try {
-			repository.save(charger);
-			return "Data stored successfully";
-		} catch (Exception e) {
-			return "Something went wrong, please check the details";
-		}
+			chargerRepository.save(charger);
+			return chargerConverter.entityToDto(charger);
+		
 	}
 
-	/**
-	 * this method is used to read the details of particular id send by user also it
-	 * check the details are deleted or not, if details are available then it will
-	 * send the details otherwise send the null value
-	 */
+
 	@Override
 	@Transactional
-	public Charger getDetails(String chargerId) {
-		return repository.findByChargerIdAndIsActiveTrue(chargerId);
+	public Charger show(String chargerId) {
+		return chargerRepository.findByChargerIdAndIsActiveTrue(chargerId);
 
 	}
 
-	/**
-	 * this method is used to get list of all the available details in database
-	 */
+
 	@Override
 	@Transactional
-	public List<Charger> getAllDetails() {
-		return repository.findAllByIsActiveTrue();
+	public List<Charger> showAll() {
+		return chargerRepository.findAllByIsActiveTrue();
 
 	}
-
-	/**
-	 * this method is used for soft delete, if user hit the delete method it will
-	 * change the IsActive Status true to false details still present in DB
-	 */
+	
 	@Override
 	@Transactional
-	public void deleteDetails(String chargerId) {
-		Charger charger = repository.findByChargerIdAndIsActiveTrue(chargerId);
-		if (charger != null) {
-			charger.setActive(false);
-			repository.save(charger);
+	public boolean edit(String chargerId, ChargerDto chargerDto) {
+		Charger charger = chargerConverter.dtoToEntity(chargerDto);
 
-		} else {
-			throw new ChargerException("data is not available");
-		}
-	}
-
-	/**
-	 * This method is used to update the details first it will convert the DTO to
-	 * entity then it will store the essential details to the DB
-	 */
-	@Override
-	@Transactional
-	public boolean updateDetails(String chargerId, ChargerDTO chargerDTO) {
-		Charger charger = converter.dtoToEntity(chargerDTO);
-
-		Charger obj = repository.findByChargerIdAndIsActiveTrue(chargerId);
+		Charger obj = chargerRepository.findByChargerIdAndIsActiveTrue(chargerId);
 
 		if (obj != null) {
 			
@@ -157,11 +124,27 @@ public class ChargerServiceImpl implements ChargerService {
 			if (charger.getModifiedBy() != null)
 				obj.setModifiedBy(charger.getModifiedBy());
 
-			repository.save(obj);
+			chargerRepository.save(obj);
 			return true;
 		} else {
 			return false;
 		}
 	}
+
+
+	@Override
+	@Transactional
+	public boolean remove(String chargerId) {
+		Charger charger = chargerRepository.findByChargerIdAndIsActiveTrue(chargerId);
+		if (charger != null) {
+			charger.setActive(false);
+			chargerRepository.save(charger);
+			return true;
+
+		} else 
+			return false;
+	}
+
+
 
 }

@@ -2,6 +2,7 @@ package com.vst.charger.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Document(collection = "Charger")
+@Document(collection = "charger")
 
 /**
  * this class is used to connect with collection of DB and stored the data in

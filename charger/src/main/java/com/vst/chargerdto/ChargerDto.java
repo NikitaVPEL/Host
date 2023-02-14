@@ -14,7 +14,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ChargerDTO {
+public class ChargerDto {
 	
 	@Transient
 	public static final String SEQUENCE_NAME = "charger";

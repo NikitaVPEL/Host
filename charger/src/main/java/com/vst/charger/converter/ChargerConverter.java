@@ -3,21 +3,21 @@ package com.vst.charger.converter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import com.vst.charger.model.Charger;
-import com.vst.chargerdto.ChargerDTO;
+import com.vst.chargerdto.ChargerDto;
 
 @Component
 public class ChargerConverter {
 	
-	public Charger dtoToEntity(ChargerDTO chargerDTO) {
+	public Charger dtoToEntity(ChargerDto chargerDto) {
 		Charger charger = new Charger();
-		BeanUtils.copyProperties(chargerDTO, charger);
+		BeanUtils.copyProperties(chargerDto, charger);
 		return charger;
 	}
 	
-	public ChargerDTO entityToDto(Charger charger) {
-		ChargerDTO chargerDTO = new ChargerDTO();
-		BeanUtils.copyProperties(charger, chargerDTO);
-		return chargerDTO;
+	public ChargerDto entityToDto(Charger charger) {
+		ChargerDto chargerDto = new ChargerDto();
+		BeanUtils.copyProperties(charger, chargerDto);
+		return chargerDto;
 	}
 
 }
