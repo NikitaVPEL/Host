@@ -18,6 +18,8 @@ import com.vst.charger.exception.ChargerNotFoundException;
 import com.vst.charger.model.Charger;
 import com.vst.charger.repository.ChargerRepository;
 
+import jakarta.validation.Valid;
+
 @Service
 public class ChargerServiceImpl implements ChargerServiceInterface {
 
@@ -75,74 +77,74 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 
 	@Override
 	@Transactional
-	public void edit(String chargerId, ChargerDto chargerDto) {
+	public void edit( String chargerId,@Valid ChargerDto chargerDto) {
 
 		if (!chargerId.trim().isEmpty()) {
 			Charger charger = chargerConverter.dtoToEntity(chargerDto);
 			Charger obj = chargerRepository.findByChargerIdAndIsActiveTrue(chargerId);
 			if (obj != null) {
 
-				if (charger.getChargerName() != null)
+				if (!charger.getChargerName().trim().isEmpty())
 					obj.setChargerName(charger.getChargerName());
 
-				if (charger.getChargerInputVoltage() != null)
+				if (!charger.getChargerInputVoltage().trim().isEmpty())
 					obj.setChargerInputVoltage(charger.getChargerInputVoltage());
 
-				if (charger.getChargerOutputVoltage() != null)
+				if (!charger.getChargerOutputVoltage().trim().isEmpty())
 					obj.setChargerOutputVoltage(charger.getChargerOutputVoltage());
 
-				if (charger.getChargerMinInputAmpere() != null)
+				if (!charger.getChargerMinInputAmpere().trim().isEmpty())
 					obj.setChargerMinInputAmpere(charger.getChargerMinInputAmpere());
 
-				if (charger.getChargerMaxInputAmpere() != null)
+				if (!charger.getChargerMaxInputAmpere().trim().isEmpty())
 					obj.setChargerMaxInputAmpere(charger.getChargerMaxInputAmpere());
 
-				if (charger.getChargerOutputAmpere() != null)
+				if (!charger.getChargerOutputAmpere().trim().isEmpty())
 					obj.setChargerOutputAmpere(charger.getChargerOutputAmpere());
 
-				if (charger.getChargerInputFrequency() != null)
+				if (!charger.getChargerInputFrequency().trim().isEmpty())
 					obj.setChargerInputFrequency(charger.getChargerInputFrequency());
 
-				if (charger.getChargerOutputFrequency() != null)
+				if (!charger.getChargerOutputFrequency().trim().isEmpty())
 					obj.setChargerOutputFrequency(charger.getChargerOutputFrequency());
 
-				if (charger.getChargerIPRating() != null)
+				if (!charger.getChargerIPRating().trim().isEmpty())
 					obj.setChargerIPRating(charger.getChargerIPRating());
 
-				if (charger.getChargerMountType() != null)
+				if (!charger.getChargerMountType().trim().isEmpty())
 					obj.setChargerMountType(charger.getChargerMountType());
 
-				if (charger.getIsRFID() != null)
+				if (!charger.getIsRFID().trim().isEmpty())
 					obj.setIsRFID(charger.getIsRFID());
 
-				if (charger.getIsAppSupport() != null)
+				if (!charger.getIsAppSupport().trim().isEmpty())
 					obj.setIsAppSupport(charger.getIsAppSupport());
 
-				if (charger.getIsTBCutOff() != null)
+				if (!charger.getIsTBCutOff().trim().isEmpty())
 					obj.setIsTBCutOff(charger.getIsTBCutOff());
 
-				if (charger.getIsAntitheft() != null)
+				if (!charger.getIsAntitheft().trim().isEmpty())
 					obj.setIsAntitheft(charger.getIsAntitheft());
 
-				if (charger.getIsLEDDisplay() != null)
+				if (!charger.getIsLEDDisplay().trim().isEmpty())
 					obj.setIsLEDDisplay(charger.getIsLEDDisplay());
 
-				if (charger.getIsLEDIndications() != null)
+				if (!charger.getIsLEDIndications().trim().isEmpty())
 					obj.setIsLEDIndications(charger.getIsLEDIndications());
 
-				if (charger.getIsSmart() != null)
+				if (!charger.getIsSmart().trim().isEmpty())
 					obj.setIsSmart(charger.getIsSmart());
 
-				if (charger.getCreatedDate() != null)
+				if (!charger.getCreatedDate().trim().isEmpty())
 					obj.setCreatedDate(charger.getCreatedDate());
 
-				if (charger.getModifiedDate() != null)
+				if (!charger.getModifiedDate().trim().isEmpty())
 					obj.setModifiedDate(charger.getModifiedDate());
 
-				if (charger.getCreatedBy() != null)
+				if (!charger.getCreatedBy().trim().isEmpty())
 					obj.setCreatedBy(charger.getCreatedBy());
 
-				if (charger.getModifiedBy() != null)
+				if (!charger.getModifiedBy().trim().isEmpty())
 					obj.setModifiedBy(charger.getModifiedBy());
 
 				chargerRepository.save(obj);

@@ -44,7 +44,7 @@ public class ChargerController {
 	}
 
 	@PutMapping("charger")
-	public ResponseEntity<String> updateCharger(@Valid @RequestParam("chargerId") String chargerId,
+	public ResponseEntity<String> updateCharger( @RequestParam("chargerId") String chargerId,
 			@RequestBody ChargerDto chargerDto) {
 
 		chargerServiceImpl.edit(chargerId, chargerDto);

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
+
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,56 +18,78 @@ import com.vst.charger.exception.ChargerNotFoundException;
 
 @RestControllerAdvice
 public class ChargerApiError {
-	
+
+//	@ExceptionHandler(MethodArgumentNotValidException.class)
+//	@ResponseStatus(HttpStatus.NOT_FOUND)
+//	public Map<String, String> validDataNotFound(MethodArgumentNotValidException ex) {
+//		Map<String, String> errorMap = new HashMap<>();
+//		List<FieldError> errors = ex.getFieldErrors();
+//		for (FieldError error : errors) {
+//			errorMap.put(error.getField(), error.getDefaultMessage());
+//		}
+//		return errorMap;
+//	}
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> validDataNotFound(MethodArgumentNotValidException ex){
-		
-    	Map<String, String> errorMap = new HashMap<>();
-    	
-    	  List<FieldError>errors= ex.getFieldErrors();
-    	  
-    	for(FieldError error : errors) {
-    		errorMap.put(error.getField(), error.getDefaultMessage());
-    	}
-//    	ex.getBindingResult().getFieldError().forEach(error ->{
-//    		errorMap.put(error.getField(),error.getDefaultMessage());
-//    	});
-    	return errorMap;
-    	
-    }
-	
+	public Map<String, String> handleInvalidArgument(MethodArgumentNotValidException ex) {
+		Map<String, String> errorMap = new HashMap<>();
+		ex.getBindingResult().getFieldErrors().forEach(error -> {
+			errorMap.put(error.getField(), error.getDefaultMessage());
+		});
+		return errorMap;
+	}
 
 	@ExceptionHandler(ChargerNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> UserNotFound(ChargerNotFoundException ex){
-    	Map<String, Object> errorMap = new HashMap<>();
-    	
-    	ChargerErrorResponse response = new ChargerErrorResponse();
+	public Map<String, Object> UserNotFound(ChargerNotFoundException ex) {
+		Map<String, Object> errorMap = new HashMap<>();
+
+		ChargerErrorResponse response = new ChargerErrorResponse();
 		response.setMessage("details you have given is not present");
 		response.setStatus(HttpStatus.NOT_FOUND);
 		response.setStatusCode("404");
 		response.setTimeStamp(LocalDateTime.now());
-		
-    	errorMap.put("error message", response);
-    	return errorMap;
-    	
-    }
-    
+
+		errorMap.put("error message", response);
+		return errorMap;
+
+	}
+
 	@ExceptionHandler(IdNotAcceptableException.class)
 	@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    public Map<String, Object> IdNotFound(IdNotAcceptableException ex){
-		
-    	Map<String, Object> errorMap = new HashMap<>();
-    	
-    	ChargerErrorResponse response = new ChargerErrorResponse();
+	public Map<String, Object> IdNotFound(IdNotAcceptableException ex) {
+
+		Map<String, Object> errorMap = new HashMap<>();
+
+		ChargerErrorResponse response = new ChargerErrorResponse();
 		response.setMessage("given id is not correct or not available");
 		response.setStatus(HttpStatus.NOT_ACCEPTABLE);
 		response.setStatusCode("406");
 		response.setTimeStamp(LocalDateTime.now());
-		
-    	errorMap.put("error message", response);
-    	return errorMap;
+
+		errorMap.put("error message", response);
+		return errorMap;
 	}
+	
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(NullPointerException.class)
+	public Map<String, Object> nullPoint(NullPointerException ex) {
+		Map<String, Object> errorMap = new HashMap<>();
+//		
+//		ex.getBindingResult().getFieldErrors().forEach(error -> {
+//			errorMap.put(error.getField(), error.getDefaultMessage());
+//		});
+//		return errorMap;
+		
+		ChargerErrorResponse response = new ChargerErrorResponse();
+		response.setMessage("please provide valid request");
+		response.setStatus(HttpStatus.BAD_REQUEST);
+		response.setStatusCode("406");
+		response.setTimeStamp(LocalDateTime.now());
+
+		errorMap.put("error message", response);
+		return errorMap;
+	} 
 
 }
