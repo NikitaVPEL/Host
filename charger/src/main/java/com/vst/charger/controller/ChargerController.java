@@ -48,7 +48,7 @@ public class ChargerController {
 			@RequestBody ChargerDto chargerDto) {
 
 		chargerServiceImpl.edit(chargerId, chargerDto);
-		return new ResponseEntity<String>("Details updated sucessfully", HttpStatus.OK);
+		return new ResponseEntity<>("Details updated sucessfully", HttpStatus.OK);
 
 	}
 

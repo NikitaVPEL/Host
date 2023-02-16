@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.vst.charger.controller.ChargerController;
 import com.vst.charger.converter.ChargerConverter;
@@ -32,11 +33,14 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 	@Autowired
 	ChargerSequenceGeneratorService chargerSequenceGeneratorService;
 
-	public static final Logger logger = LogManager.getLogger(ChargerController.class);
+	public static final Logger logger = LogManager.getLogger(ChargerServiceImpl.class);
 
 	@Override
 	@Transactional
 	public String add(ChargerDto chargerDto) {
+		
+		//data the given data is not valid then it will throw MethodArgumentNotValidException and that exception will catch
+		// by handleInvalidException method of ApiError class.
 
 		Charger charger = chargerConverter.dtoToEntity(chargerDto);
 		charger.setChargerId(chargerSequenceGeneratorService.idGenerator());
@@ -56,10 +60,11 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 
 				return charger;
 			} else {
-				throw new ChargerNotFoundException("given id is not available");
+				
+				throw new ChargerNotFoundException("data of given id is not available in the database");
 			}
 		} else {
-			throw new IdNotAcceptableException("please enter correct id");
+			throw new IdNotAcceptableException("entered id is null or not valid ,please enter correct id");
 		}
 
 	}
@@ -71,7 +76,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 		if (!list.isEmpty()) {
 			return list;
 		} else {
-			throw new ChargerNotFoundException("data is not available");
+			throw new ChargerNotFoundException("there is no data available in database");
 		}
 	}
 
@@ -83,6 +88,9 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 			Charger charger = chargerConverter.dtoToEntity(chargerDto);
 			Charger obj = chargerRepository.findByChargerIdAndIsActiveTrue(chargerId);
 			if (obj != null) {
+				
+				//if data is not valid then it will throw nullPointerException. that exception will catch by chargerApiError 
+				//class method nullpoint
 
 				if (!charger.getChargerName().trim().isEmpty())
 					obj.setChargerName(charger.getChargerName());
@@ -149,10 +157,10 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 
 				chargerRepository.save(obj);
 			} else {
-				throw new ChargerNotFoundException("given id is not available");
+				throw new ChargerNotFoundException("data of given id is not available in the database");
 			}
 		} else {
-			throw new IdNotAcceptableException("please enter correct id");
+			throw new IdNotAcceptableException("entered id is null or not valid ,please enter correct id");
 
 		}
 	}
@@ -168,10 +176,10 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 				charger.setActive(false);
 				chargerRepository.save(charger);
 			} else {
-				throw new ChargerNotFoundException("charger is not found");
+				throw new ChargerNotFoundException("charger is not found in database, either it is deleted or not available");
 			}
 		} else {
-			throw new IdNotAcceptableException("");
+			throw new IdNotAcceptableException("givrn id is not correct, may be it is null or not valid");
 		}
 	}
 
