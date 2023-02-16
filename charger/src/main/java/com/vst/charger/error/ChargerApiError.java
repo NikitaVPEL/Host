@@ -48,7 +48,7 @@ public class ChargerApiError {
 		ChargerErrorResponse response = new ChargerErrorResponse();
 		response.setMessage("details you have given is not present");
 		response.setStatus(HttpStatus.NOT_FOUND);
-		response.setStatusCode("404");
+		response.setStatusCode("VC34324");
 		response.setTimeStamp(LocalDateTime.now());
 
 		errorMap.put(errorMessage, response);
@@ -72,6 +72,7 @@ public class ChargerApiError {
 		return errorMap;
 	}
 	
+	/**
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(NullPointerException.class)
 	public Map<String, Object> nullPoint(NullPointerException ex) {
@@ -85,6 +86,6 @@ public class ChargerApiError {
 
 		errorMap.put(errorMessage, response);
 		return errorMap;
-	} 
+	} */
 
 }

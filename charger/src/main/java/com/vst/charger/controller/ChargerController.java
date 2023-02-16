@@ -2,6 +2,8 @@ package com.vst.charger.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,6 @@ import com.vst.charger.dto.ChargerDto;
 import com.vst.charger.model.Charger;
 import com.vst.charger.service.ChargerServiceImpl;
 
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/vst1")
@@ -45,7 +46,7 @@ public class ChargerController {
 
 	@PutMapping("charger")
 	public ResponseEntity<String> updateCharger( @RequestParam("chargerId") String chargerId,
-			@RequestBody ChargerDto chargerDto) {
+		@Valid	@RequestBody ChargerDto chargerDto) {
 
 		chargerServiceImpl.edit(chargerId, chargerDto);
 		return new ResponseEntity<>("Details updated sucessfully", HttpStatus.OK);
@@ -53,7 +54,7 @@ public class ChargerController {
 	}
 
 	@DeleteMapping("charger")
-	public ResponseEntity<String> deleteCharger(@RequestParam("chargerId") String chargerId) {
+	public ResponseEntity<String> deleteCharger( @RequestParam("chargerId") String chargerId) {
 
 		chargerServiceImpl.remove(chargerId);
 		return new ResponseEntity<>("Charger deleted successfully", HttpStatus.OK);

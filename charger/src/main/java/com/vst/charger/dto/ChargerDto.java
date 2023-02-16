@@ -1,9 +1,11 @@
 package com.vst.charger.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +23,7 @@ public class ChargerDto {
 	
 	@Id
 	private String chargerId;
-	@NotNull(message = "name should not be null")
+	@NotBlank @NotNull(message = "name should not be null")
 	private String chargerName;
 	@NotNull
 	private String chargerInputVoltage;

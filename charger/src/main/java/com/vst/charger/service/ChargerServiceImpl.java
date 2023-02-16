@@ -5,13 +5,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import com.vst.charger.controller.ChargerController;
 import com.vst.charger.converter.ChargerConverter;
 import com.vst.charger.dto.ChargerDto;
 import com.vst.charger.exception.IdNotAcceptableException;
@@ -19,7 +15,6 @@ import com.vst.charger.exception.ChargerNotFoundException;
 import com.vst.charger.model.Charger;
 import com.vst.charger.repository.ChargerRepository;
 
-import jakarta.validation.Valid;
 
 @Service
 public class ChargerServiceImpl implements ChargerServiceInterface {
@@ -53,7 +48,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 	@Transactional
 	public Charger show(String chargerId) {
 
-		if (!chargerId.trim().isEmpty()) {
+		if (!chargerId.isBlank()) {
 
 			Charger charger = chargerRepository.findByChargerIdAndIsActiveTrue(chargerId);
 			if (charger != null) {
@@ -82,77 +77,78 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 
 	@Override
 	@Transactional
-	public void edit( String chargerId,@Valid ChargerDto chargerDto) {
+	public void edit( String chargerId, ChargerDto chargerDto) {
 
-		if (!chargerId.trim().isEmpty()) {
+		if (!chargerId.isBlank()) {
 			Charger charger = chargerConverter.dtoToEntity(chargerDto);
 			Charger obj = chargerRepository.findByChargerIdAndIsActiveTrue(chargerId);
 			if (obj != null) {
 				
 				//if data is not valid then it will throw nullPointerException. that exception will catch by chargerApiError 
 				//class method nullpoint
-
-				if (!charger.getChargerName().trim().isEmpty())
+				
+				System.out.println(charger.getChargerName().isBlank());
+				if (!charger.getChargerName().isBlank())
 					obj.setChargerName(charger.getChargerName());
 
-				if (!charger.getChargerInputVoltage().trim().isEmpty())
+				if (!charger.getChargerInputVoltage().isBlank())
 					obj.setChargerInputVoltage(charger.getChargerInputVoltage());
 
-				if (!charger.getChargerOutputVoltage().trim().isEmpty())
+				if (!charger.getChargerOutputVoltage().isBlank())
 					obj.setChargerOutputVoltage(charger.getChargerOutputVoltage());
 
-				if (!charger.getChargerMinInputAmpere().trim().isEmpty())
+				if (!charger.getChargerMinInputAmpere().isBlank())
 					obj.setChargerMinInputAmpere(charger.getChargerMinInputAmpere());
 
-				if (!charger.getChargerMaxInputAmpere().trim().isEmpty())
+				if (!charger.getChargerMaxInputAmpere().isBlank())
 					obj.setChargerMaxInputAmpere(charger.getChargerMaxInputAmpere());
 
-				if (!charger.getChargerOutputAmpere().trim().isEmpty())
+				if (!charger.getChargerOutputAmpere().isBlank())
 					obj.setChargerOutputAmpere(charger.getChargerOutputAmpere());
 
-				if (!charger.getChargerInputFrequency().trim().isEmpty())
+				if (!charger.getChargerInputFrequency().isBlank())
 					obj.setChargerInputFrequency(charger.getChargerInputFrequency());
 
-				if (!charger.getChargerOutputFrequency().trim().isEmpty())
+				if (!charger.getChargerOutputFrequency().isBlank())
 					obj.setChargerOutputFrequency(charger.getChargerOutputFrequency());
 
-				if (!charger.getChargerIPRating().trim().isEmpty())
+				if (!charger.getChargerIPRating().isBlank())
 					obj.setChargerIPRating(charger.getChargerIPRating());
 
-				if (!charger.getChargerMountType().trim().isEmpty())
+				if (!charger.getChargerMountType().isBlank())
 					obj.setChargerMountType(charger.getChargerMountType());
 
-				if (!charger.getIsRFID().trim().isEmpty())
+				if (!charger.getIsRFID().isBlank())
 					obj.setIsRFID(charger.getIsRFID());
 
-				if (!charger.getIsAppSupport().trim().isEmpty())
+				if (!charger.getIsAppSupport().isBlank())
 					obj.setIsAppSupport(charger.getIsAppSupport());
 
-				if (!charger.getIsTBCutOff().trim().isEmpty())
+				if (!charger.getIsTBCutOff().isBlank())
 					obj.setIsTBCutOff(charger.getIsTBCutOff());
 
-				if (!charger.getIsAntitheft().trim().isEmpty())
+				if (!charger.getIsAntitheft().isBlank())
 					obj.setIsAntitheft(charger.getIsAntitheft());
 
-				if (!charger.getIsLEDDisplay().trim().isEmpty())
+				if (!charger.getIsLEDDisplay().isBlank())
 					obj.setIsLEDDisplay(charger.getIsLEDDisplay());
 
-				if (!charger.getIsLEDIndications().trim().isEmpty())
+				if (!charger.getIsLEDIndications().isBlank())
 					obj.setIsLEDIndications(charger.getIsLEDIndications());
 
-				if (!charger.getIsSmart().trim().isEmpty())
+				if (!charger.getIsSmart().isBlank())
 					obj.setIsSmart(charger.getIsSmart());
 
-				if (!charger.getCreatedDate().trim().isEmpty())
+				if (!charger.getCreatedDate().isBlank())
 					obj.setCreatedDate(charger.getCreatedDate());
 
-				if (!charger.getModifiedDate().trim().isEmpty())
+				if (!charger.getModifiedDate().isBlank())
 					obj.setModifiedDate(charger.getModifiedDate());
 
-				if (!charger.getCreatedBy().trim().isEmpty())
+				if (!charger.getCreatedBy().isBlank())
 					obj.setCreatedBy(charger.getCreatedBy());
 
-				if (!charger.getModifiedBy().trim().isEmpty())
+				if (!charger.getModifiedBy().isBlank())
 					obj.setModifiedBy(charger.getModifiedBy());
 
 				chargerRepository.save(obj);
@@ -169,7 +165,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 	@Transactional
 	public void remove(String chargerId) {
 
-		if (!chargerId.trim().isEmpty()) {
+		if (!chargerId.isBlank()) {
 
 			Charger charger = chargerRepository.findByChargerIdAndIsActiveTrue(chargerId);
 			if (charger != null) {
@@ -179,7 +175,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 				throw new ChargerNotFoundException("charger is not found in database, either it is deleted or not available");
 			}
 		} else {
-			throw new IdNotAcceptableException("givrn id is not correct, may be it is null or not valid");
+			throw new IdNotAcceptableException("given id is not correct, it is null or not valid");
 		}
 	}
 
