@@ -60,5 +60,10 @@ public class ChargerController {
 		return new ResponseEntity<>("Charger deleted successfully", HttpStatus.OK);
 
 	}
+	
+	@GetMapping("chargername")
+	public Charger getChargerName(@RequestParam("chargerName") String chargerName) {
+		return chargerServiceImpl.showByName(chargerName);
+	}
 
 }

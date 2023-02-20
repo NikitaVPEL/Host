@@ -5,12 +5,14 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vst.charger.converter.ChargerConverter;
 import com.vst.charger.dto.ChargerDto;
-import com.vst.charger.exception.IdNotAcceptableException;
+import com.vst.charger.exception.ChargerIdNotAcceptableException;
 import com.vst.charger.exception.ChargerNotFoundException;
 import com.vst.charger.model.Charger;
 import com.vst.charger.repository.ChargerRepository;
@@ -24,6 +26,9 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 
 	@Autowired
 	ChargerConverter chargerConverter;
+	
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
 	@Autowired
 	ChargerSequenceGeneratorService chargerSequenceGeneratorService;
@@ -59,9 +64,8 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 				throw new ChargerNotFoundException("data of given id is not available in the database");
 			}
 		} else {
-			throw new IdNotAcceptableException("entered id is null or not valid ,please enter correct id");
+			throw new ChargerIdNotAcceptableException("entered id is null or not valid ,please enter correct id");
 		}
-
 	}
 
 	@Override
@@ -87,7 +91,6 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 				//if data is not valid then it will throw nullPointerException. that exception will catch by chargerApiError 
 				//class method nullpoint
 				
-				System.out.println(charger.getChargerName().isBlank());
 				if (!charger.getChargerName().isBlank())
 					obj.setChargerName(charger.getChargerName());
 
@@ -156,7 +159,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 				throw new ChargerNotFoundException("data of given id is not available in the database");
 			}
 		} else {
-			throw new IdNotAcceptableException("entered id is null or not valid ,please enter correct id");
+			throw new ChargerIdNotAcceptableException("entered id is null or not valid ,please enter correct id");
 
 		}
 	}
@@ -175,8 +178,25 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 				throw new ChargerNotFoundException("charger is not found in database, either it is deleted or not available");
 			}
 		} else {
-			throw new IdNotAcceptableException("given id is not correct, it is null or not valid");
+			throw new ChargerIdNotAcceptableException("given id is not correct, it is null or not valid");
 		}
 	}
+
+@Override
+	public Charger showByName(String chargerName) {
+		return chargerRepository.findByChargerName(chargerName);
+		
+	}
+
+//public List<Charger> findByChargerName(String name) {
+//    List<Charger> documents = mongoTemplate.find(
+//        Query.query(Criteria.where("name").is(name)), Charger.class);
+//    System.out.println(mongoTemplate
+//            .explain(Query.query(Criteria.where("name").is(name)), Charger.class));
+//    return documents;
+//}
+
+	
+	
 
 }

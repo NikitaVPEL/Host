@@ -19,4 +19,6 @@ public interface ChargerServiceInterface {
 	
 	public void remove(String chargerId);
 
+	public Charger showByName(String chargerName);
+
 }

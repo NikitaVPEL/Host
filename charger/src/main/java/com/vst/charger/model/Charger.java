@@ -1,6 +1,7 @@
 package com.vst.charger.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -14,14 +15,12 @@ import lombok.ToString;
 @ToString
 @Document(collection = "charger")
 
-/**
- * this class is used to connect with collection of DB and stored the data in
- * database
- */
+
 public class Charger {
 	
 	@Id
 	private String chargerId;
+	@Indexed
 	private String chargerName;
 	private String chargerInputVoltage;
 	private String chargerOutputVoltage;

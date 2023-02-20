@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.vst.charger.exception.IdNotAcceptableException;
+import com.vst.charger.exception.ChargerIdNotAcceptableException;
 import com.vst.charger.exception.ChargerNotFoundException;
 
 @RestControllerAdvice
@@ -56,9 +56,9 @@ public class ChargerApiError {
 
 	}
 
-	@ExceptionHandler(IdNotAcceptableException.class)
+	@ExceptionHandler(ChargerIdNotAcceptableException.class)
 	@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-	public Map<String, Object> idNotFound(IdNotAcceptableException ex) {
+	public Map<String, Object> idNotFound(ChargerIdNotAcceptableException ex) {
 
 		Map<String, Object> errorMap = new HashMap<>();
 
