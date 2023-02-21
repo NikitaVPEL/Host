@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +17,6 @@ import com.vst.charger.exception.ChargerNotFoundException;
 import com.vst.charger.model.Charger;
 import com.vst.charger.repository.ChargerRepository;
 
-
 @Service
 public class ChargerServiceImpl implements ChargerServiceInterface {
 
@@ -26,9 +25,9 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 
 	@Autowired
 	ChargerConverter chargerConverter;
-	
-    @Autowired
-    private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	@Autowired
 	ChargerSequenceGeneratorService chargerSequenceGeneratorService;
@@ -38,9 +37,10 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 	@Override
 	@Transactional
 	public String add(ChargerDto chargerDto) {
-		
-		//data the given data is not valid then it will throw MethodArgumentNotValidException and that exception will catch
-		// by handleInvalidException method of ApiError class.
+
+		// data the given data is not valid then it will throw
+		// MethodArgumentNotValidException and that exception will catch by
+		// handleInvalidException method of ApiError class.
 
 		Charger charger = chargerConverter.dtoToEntity(chargerDto);
 		charger.setChargerId(chargerSequenceGeneratorService.idGenerator());
@@ -60,7 +60,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 
 				return charger;
 			} else {
-				
+
 				throw new ChargerNotFoundException("data of given id is not available in the database");
 			}
 		} else {
@@ -81,78 +81,99 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 
 	@Override
 	@Transactional
-	public void edit( String chargerId, ChargerDto chargerDto) {
+	public void edit(String chargerId, ChargerDto chargerDto) {
 
 		if (!chargerId.isBlank()) {
 			Charger charger = chargerConverter.dtoToEntity(chargerDto);
 			Charger obj = chargerRepository.findByChargerIdAndIsActiveTrue(chargerId);
 			if (obj != null) {
-				
-				//if data is not valid then it will throw nullPointerException. that exception will catch by chargerApiError 
-				//class method nullpoint
-				
-				if (!charger.getChargerName().isBlank())
-					obj.setChargerName(charger.getChargerName());
 
-				if (!charger.getChargerInputVoltage().isBlank())
-					obj.setChargerInputVoltage(charger.getChargerInputVoltage());
+				// if data is not valid then it will throw nullPointerException. that exception
+				// will catch by chargerApiError class method nullpoint
 
-				if (!charger.getChargerOutputVoltage().isBlank())
-					obj.setChargerOutputVoltage(charger.getChargerOutputVoltage());
+				if (charger.getChargerName() != null)
+					if (!charger.getChargerName().isBlank())
+						obj.setChargerName(charger.getChargerName());
 
-				if (!charger.getChargerMinInputAmpere().isBlank())
-					obj.setChargerMinInputAmpere(charger.getChargerMinInputAmpere());
+				if (charger.getChargerInputVoltage() != null)
+					if (!charger.getChargerInputVoltage().isBlank())
+						obj.setChargerInputVoltage(charger.getChargerInputVoltage());
 
-				if (!charger.getChargerMaxInputAmpere().isBlank())
-					obj.setChargerMaxInputAmpere(charger.getChargerMaxInputAmpere());
+				if (charger.getChargerOutputVoltage() != null)
+					if (!charger.getChargerOutputVoltage().isBlank())
+						obj.setChargerOutputVoltage(charger.getChargerOutputVoltage());
 
-				if (!charger.getChargerOutputAmpere().isBlank())
-					obj.setChargerOutputAmpere(charger.getChargerOutputAmpere());
+				if (charger.getChargerMinInputAmpere() != null)
+					if (!charger.getChargerMinInputAmpere().isBlank())
+						obj.setChargerMinInputAmpere(charger.getChargerMinInputAmpere());
 
-				if (!charger.getChargerInputFrequency().isBlank())
-					obj.setChargerInputFrequency(charger.getChargerInputFrequency());
+				if (charger.getChargerMaxInputAmpere() != null)
+					if (!charger.getChargerMaxInputAmpere().isBlank())
+						obj.setChargerMaxInputAmpere(charger.getChargerMaxInputAmpere());
 
-				if (!charger.getChargerOutputFrequency().isBlank())
-					obj.setChargerOutputFrequency(charger.getChargerOutputFrequency());
+				if (charger.getChargerOutputAmpere() != null)
+					if (!charger.getChargerOutputAmpere().isBlank())
+						obj.setChargerOutputAmpere(charger.getChargerOutputAmpere());
 
-				if (!charger.getChargerIPRating().isBlank())
-					obj.setChargerIPRating(charger.getChargerIPRating());
+				if (charger.getChargerInputFrequency() != null)
+					if (!charger.getChargerInputFrequency().isBlank())
+						obj.setChargerInputFrequency(charger.getChargerInputFrequency());
 
-				if (!charger.getChargerMountType().isBlank())
-					obj.setChargerMountType(charger.getChargerMountType());
+				if (charger.getChargerOutputFrequency() != null)
+					if (!charger.getChargerOutputFrequency().isBlank())
+						obj.setChargerOutputFrequency(charger.getChargerOutputFrequency());
 
-				if (!charger.getIsRFID().isBlank())
-					obj.setIsRFID(charger.getIsRFID());
+				if (charger.getChargerIPRating() != null)
+					if (!charger.getChargerIPRating().isBlank())
+						obj.setChargerIPRating(charger.getChargerIPRating());
 
-				if (!charger.getIsAppSupport().isBlank())
-					obj.setIsAppSupport(charger.getIsAppSupport());
+				if (charger.getChargerMountType() != null)
+					if (!charger.getChargerMountType().isBlank())
+						obj.setChargerMountType(charger.getChargerMountType());
 
-				if (!charger.getIsTBCutOff().isBlank())
-					obj.setIsTBCutOff(charger.getIsTBCutOff());
+				if (charger.getIsRFID() != null)
+					if (!charger.getIsRFID().isBlank())
+						obj.setIsRFID(charger.getIsRFID());
 
-				if (!charger.getIsAntitheft().isBlank())
-					obj.setIsAntitheft(charger.getIsAntitheft());
+				if (charger.getIsAppSupport() != null)
+					if (!charger.getIsAppSupport().isBlank())
+						obj.setIsAppSupport(charger.getIsAppSupport());
 
-				if (!charger.getIsLEDDisplay().isBlank())
-					obj.setIsLEDDisplay(charger.getIsLEDDisplay());
+				if (charger.getIsTBCutOff() != null)
+					if (!charger.getIsTBCutOff().isBlank())
+						obj.setIsTBCutOff(charger.getIsTBCutOff());
 
-				if (!charger.getIsLEDIndications().isBlank())
-					obj.setIsLEDIndications(charger.getIsLEDIndications());
+				if (charger.getIsAntitheft() != null)
+					if (!charger.getIsAntitheft().isBlank())
+						obj.setIsAntitheft(charger.getIsAntitheft());
 
-				if (!charger.getIsSmart().isBlank())
-					obj.setIsSmart(charger.getIsSmart());
+				if (charger.getIsLEDDisplay() != null)
+					if (!charger.getIsLEDDisplay().isBlank())
+						obj.setIsLEDDisplay(charger.getIsLEDDisplay());
 
-				if (!charger.getCreatedDate().isBlank())
-					obj.setCreatedDate(charger.getCreatedDate());
+				if (charger.getIsLEDIndications() != null)
+					if (!charger.getIsLEDIndications().isBlank())
+						obj.setIsLEDIndications(charger.getIsLEDIndications());
 
-				if (!charger.getModifiedDate().isBlank())
-					obj.setModifiedDate(charger.getModifiedDate());
+				if (charger.getIsSmart() != null)
+					if (!charger.getIsSmart().isBlank())
+						obj.setIsSmart(charger.getIsSmart());
 
-				if (!charger.getCreatedBy().isBlank())
-					obj.setCreatedBy(charger.getCreatedBy());
+				if (charger.getCreatedDate() != null)
+					if (!charger.getCreatedDate().isBlank())
+						obj.setCreatedDate(charger.getCreatedDate());
 
-				if (!charger.getModifiedBy().isBlank())
-					obj.setModifiedBy(charger.getModifiedBy());
+				if (charger.getModifiedDate() != null)
+					if (!charger.getModifiedDate().isBlank())
+						obj.setModifiedDate(charger.getModifiedDate());
+
+				if (charger.getCreatedBy() != null)
+					if (!charger.getCreatedBy().isBlank())
+						obj.setCreatedBy(charger.getCreatedBy());
+
+				if (charger.getModifiedBy() != null)
+					if (!charger.getModifiedBy().isBlank())
+						obj.setModifiedBy(charger.getModifiedBy());
 
 				chargerRepository.save(obj);
 			} else {
@@ -175,17 +196,65 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 				charger.setActive(false);
 				chargerRepository.save(charger);
 			} else {
-				throw new ChargerNotFoundException("charger is not found in database, either it is deleted or not available");
+				throw new ChargerNotFoundException(
+						"charger is not found in database, either it is deleted or not available");
 			}
 		} else {
 			throw new ChargerIdNotAcceptableException("given id is not correct, it is null or not valid");
 		}
 	}
 
-@Override
-	public Charger showByName(String chargerName) {
-		return chargerRepository.findByChargerName(chargerName);
-		
+	@Override
+	public List<Charger> showByChargerName(String chargerName) {
+		return chargerRepository.findByChargerNameAndIsActiveTrue(chargerName);
+
+	}
+
+	@Override
+	public List<Charger> showByChargerInputVoltage(String chargerInputVoltage) {
+
+		if (!chargerInputVoltage.isBlank()) {
+
+			List<Charger> charger = chargerRepository.findByChargerInputVoltageAndIsActiveTrue(chargerInputVoltage);
+			if (charger != null) {
+
+				return charger;
+			} else {
+				throw new ChargerNotFoundException("data of given id is not available in the database");
+			}
+		} else {
+			throw new ChargerIdNotAcceptableException("entered details is null or not valid ,please enter correct id");
+		}
+	}
+
+	@Override
+	public List<Charger> showByChargerOutputVoltage(String chargerOutputVoltage) {
+		if (!chargerOutputVoltage.isBlank()) {
+
+			List<Charger> charger = chargerRepository.findByChargerOutputVoltageAndIsActiveTrue(chargerOutputVoltage);
+			if (charger != null) {
+				return charger;
+			} else {
+				throw new ChargerNotFoundException("data of given id is not available in the database");
+			}
+		} else {
+			throw new ChargerIdNotAcceptableException("entered details is null or not valid ,please enter correct id");
+		}
+	}
+
+	@Override
+	public List<Charger> showByChargerMountType(String chargerMountType) {
+		if (!chargerMountType.isBlank()) {
+
+			List<Charger> charger = chargerRepository.findByChargerMountTypeAndIsActiveTrue(chargerMountType);
+			if (charger != null) {
+				return charger;
+			} else {
+				throw new ChargerNotFoundException("data of given id is not available in the database");
+			}
+		} else {
+			throw new ChargerIdNotAcceptableException("entered details is null or not valid ,please enter correct id");
+		}
 	}
 
 //public List<Charger> findByChargerName(String name) {
@@ -195,8 +264,5 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 //            .explain(Query.query(Criteria.where("name").is(name)), Charger.class));
 //    return documents;
 //}
-
-	
-	
 
 }

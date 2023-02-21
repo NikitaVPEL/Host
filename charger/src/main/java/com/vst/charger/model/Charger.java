@@ -22,7 +22,9 @@ public class Charger {
 	private String chargerId;
 	@Indexed
 	private String chargerName;
+	@Indexed
 	private String chargerInputVoltage;
+	@Indexed
 	private String chargerOutputVoltage;
 	private String chargerMinInputAmpere;
 	private String chargerMaxInputAmpere;
@@ -30,6 +32,7 @@ public class Charger {
 	private String chargerInputFrequency;
 	private String chargerOutputFrequency;
 	private String chargerIPRating;
+	@Indexed
 	private String chargerMountType;
 	private String isRFID;
 	private String isAppSupport;

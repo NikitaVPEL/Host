@@ -19,6 +19,12 @@ public interface ChargerRepository extends MongoRepository<Charger, String> {
 	// not
 	List<Charger> findAllByIsActiveTrue();
 
-	public Charger findByChargerName(String chargerName);
+	public List<Charger> findByChargerNameAndIsActiveTrue(String chargerName);
+
+	public List<Charger> findByChargerInputVoltageAndIsActiveTrue(String chargerInputVoltage);
+
+	public List<Charger> findByChargerOutputVoltageAndIsActiveTrue(String chargerOutputVoltage);
+
+	public List<Charger> findByChargerMountTypeAndIsActiveTrue(String chargerMountType);
 
 }

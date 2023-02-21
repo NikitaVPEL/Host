@@ -20,7 +20,6 @@ import com.vst.charger.dto.ChargerDto;
 import com.vst.charger.model.Charger;
 import com.vst.charger.service.ChargerServiceImpl;
 
-
 @RestController
 @RequestMapping("/vst1")
 public class ChargerController {
@@ -45,8 +44,8 @@ public class ChargerController {
 	}
 
 	@PutMapping("charger")
-	public ResponseEntity<String> updateCharger( @RequestParam("chargerId") String chargerId,
-		@Valid	@RequestBody ChargerDto chargerDto) {
+	public ResponseEntity<String> updateCharger(@RequestParam("chargerId") String chargerId,
+			@Valid @RequestBody ChargerDto chargerDto) {
 
 		chargerServiceImpl.edit(chargerId, chargerDto);
 		return new ResponseEntity<>("Details updated sucessfully", HttpStatus.OK);
@@ -54,16 +53,31 @@ public class ChargerController {
 	}
 
 	@DeleteMapping("charger")
-	public ResponseEntity<String> deleteCharger( @RequestParam("chargerId") String chargerId) {
+	public ResponseEntity<String> deleteCharger(@RequestParam("chargerId") String chargerId) {
 
 		chargerServiceImpl.remove(chargerId);
 		return new ResponseEntity<>("Charger deleted successfully", HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("chargername")
-	public Charger getChargerName(@RequestParam("chargerName") String chargerName) {
-		return chargerServiceImpl.showByName(chargerName);
+	public ResponseEntity<List<Charger>> getChargerName(@RequestParam("chargerName") String chargerName) {
+		return ResponseEntity.ok(chargerServiceImpl.showByChargerName(chargerName));
+	}
+
+	@GetMapping("chargerInputVoltage")
+	public ResponseEntity<List<Charger>> getByChargerInputVoltage(@RequestParam("chargerInputVoltage") String chargerInputVoltage) {
+		return ResponseEntity.ok(chargerServiceImpl.showByChargerInputVoltage(chargerInputVoltage));
+	}
+
+	@GetMapping("chargerOutputVoltage")
+	public ResponseEntity<List<Charger>> getByChargerOutputVoltage(@RequestParam("chargerOutputVoltage") String chargerOutputVoltage) {
+		return ResponseEntity.ok(chargerServiceImpl.showByChargerOutputVoltage(chargerOutputVoltage));
+	}
+
+	@GetMapping("chargerMountType")
+	public ResponseEntity<List<Charger>> getByChargerMountType(@RequestParam("chargerMountType") String chargerMountType) {
+		return ResponseEntity.ok(chargerServiceImpl.showByChargerMountType(chargerMountType));
 	}
 
 }
