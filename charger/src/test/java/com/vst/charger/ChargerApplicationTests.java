@@ -56,7 +56,7 @@ import com.vst.charger.service.ChargerServiceImpl;
 		    charger1.setActive(true);
 		    ChargerDto chargerDto = converter.entityToDto(charger1);
 		    when(repository.save(charger1)).thenReturn(charger1);
-			assertEquals("Data stored successfully", service.add(chargerDto));
+			assertEquals("charger saved successfully", service.add(chargerDto));
 		
 		}
 		
