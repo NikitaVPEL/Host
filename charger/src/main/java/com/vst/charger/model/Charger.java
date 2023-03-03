@@ -1,5 +1,7 @@
 package com.vst.charger.model;
 
+import java.time.LocalDate;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,9 +24,7 @@ public class Charger {
 	private String chargerId;
 	@Indexed
 	private String chargerName;
-	@Indexed
 	private String chargerInputVoltage;
-	@Indexed
 	private String chargerOutputVoltage;
 	private String chargerMinInputAmpere;
 	private String chargerMaxInputAmpere;
@@ -32,9 +32,9 @@ public class Charger {
 	private String chargerInputFrequency;
 	private String chargerOutputFrequency;
 	private String chargerIPRating;
-	@Indexed
 	private String chargerMountType;
 	private String isRFID;
+//	private String RFID;
 	private String isAppSupport;
 	private String isTBCutOff;
 	private String isAntitheft;

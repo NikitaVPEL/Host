@@ -2,6 +2,7 @@ package com.vst.charger.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -22,69 +23,97 @@ public class ChargerDto {
 
 	@Id
 	private String chargerId;
-	@NotBlank
-	@NotNull(message = "name should not be null")
+
+	@NotBlank(message = "chargerName should not be Blank")
+	@NotNull(message = "chargerName should not be NULL")
+	@Pattern(regexp = "^[A-Za-z0-9 .-]+$", message = "should be correct")
 	private String chargerName;
-	@NotNull
-	@NotBlank
+
+	@NotBlank(message = "chargerInputVoltage should not be Blank")
+	@NotNull(message = "chargerInputVoltage should not be NULL")
 	private String chargerInputVoltage;
-	@NotBlank
-	@NotNull(message = "not null")
+
+	@NotBlank(message = "chargerOutputVoltage should not be Blank")
+	@NotNull(message = "chargerOutputVoltage should not be null")
 	private String chargerOutputVoltage;
-	@NotBlank
-	@NotNull(message = "not null")
+
+	@NotBlank(message = "chargerMinInputAmpere should not be Blank")
+	@NotNull(message = "chargerMinInputAmpere should not be NULL")
 	private String chargerMinInputAmpere;
-	@NotBlank
-	@NotNull
-	private String chargerMaxInputAmpere;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "chargerMaxInputAmpere should not be Blank")
+	@NotNull(message = "chargerMaxInputAmpere should not be null")
+	private String chargerMaxInputAmpere;   
+
+	@NotBlank(message = "chargerOutputAmpere should not be Blank")
+	@NotNull(message = "chargerOutputAmpere should not be NULL")
 	private String chargerOutputAmpere;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "chargerInputFrequency should not be Blank")
+	@NotNull(message = "chargerInputFrequency should not be NULL")
 	private String chargerInputFrequency;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "chargerOutputFrequency should not be Blank")
+	@NotNull(message = "chargerOutputFrequency should not be NULL")
 	private String chargerOutputFrequency;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "chargerIPRating should not be Blank")
+	@NotNull(message = "chargerIPRating should not be NULL")
+	@Pattern(regexp = "^[I][P][0-9]{1,4}$", message = "must be Eg: IP45")
 	private String chargerIPRating;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "chargerMountType should not be Blank")
+	@NotNull(message = "chargerMountType should not be NULL")
+	@Pattern(regexp = "^[Ww]all|[Ss]tand$", message = "must be Wall or Stand")
 	private String chargerMountType;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "isRFID should not be Blank")
+	@NotNull(message = "isRFID should not be NULL")
+	@Pattern(regexp = "^[Yy][Ee][Ss]|[Nn][Oo]$", message = "Must be Yes or No.")
 	private String isRFID;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "isAppSupport should not be Blank")
+	@NotNull(message = "isAppSupport should not be NULL")
+	@Pattern(regexp = "^[Yy][Ee][Ss]|[Nn][Oo]$", message = "Must be Yes or No.")
 	private String isAppSupport;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "isTBCutOff should not be Blank")
+	@NotNull(message = "isTBCutOff should not be NULL")
+	@Pattern(regexp = "^[Yy][Ee][Ss]|[Nn][Oo]$", message = "Must be Yes or No.")
 	private String isTBCutOff;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "isAntitheft should not be Blank")
+	@NotNull(message = "isAntitheft should not be NULL")
+	@Pattern(regexp = "^[Yy][Ee][Ss]|[Nn][Oo]$", message = "Must be Yes or No.")
 	private String isAntitheft;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "isLEDDisplay should not be Blank")
+	@NotNull(message = "isLEDDisplay should not be NULL")
+	@Pattern(regexp = "^[Yy][Ee][Ss]|[Nn][Oo]$", message = "Must be Yes or No.")
 	private String isLEDDisplay;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "isLEDIndications should not be Blank")
+	@NotNull(message = "isLEDIndications should not be NULL")
+	@Pattern(regexp = "^[Yy][Ee][Ss]|[Nn][Oo]$", message = "Must be Yes or No.")
 	private String isLEDIndications;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "isSmart should not be Blank")
+	@NotNull(message = "isSmart should not be NULL")
+	@Pattern(regexp = "^[Yy][Ee][Ss]|[Nn][Oo]$", message = "Must be Yes or No.")
 	private String isSmart;
-	@NotBlank
-	@NotNull
+
 	private String createdDate;
-	@NotBlank
-	@NotNull
+
 	private String modifiedDate;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "createdBy should not be Blank")
+	@NotNull(message = "createdBy should not be NULL")
 	private String createdBy;
-	@NotBlank
-	@NotNull
+
+	@NotBlank(message = "modifiedBy should not be Blank")
+	@NotNull(message = "modifiedBy should not be NULL")
 	private String modifiedBy;
+
 	private boolean isActive;
 
 }

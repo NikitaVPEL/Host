@@ -1,5 +1,7 @@
 package com.vst.charger.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +35,9 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 	ChargerSequenceGeneratorService chargerSequenceGeneratorService;
 
 	public static final Logger logger = LogManager.getLogger(ChargerServiceImpl.class);
+	
+	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Date date = new Date();
 
 	@Override
 	@Transactional
@@ -44,6 +49,8 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 
 		Charger charger = chargerConverter.dtoToEntity(chargerDto);
 		charger.setChargerId(chargerSequenceGeneratorService.idGenerator());
+		charger.setCreatedDate(dateFormat.format(date));
+		charger.setModifiedDate(dateFormat.format(date));
 		charger.setActive(true);
 		chargerRepository.save(charger);
 		return "charger saved successfully";
@@ -71,6 +78,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 	@Override
 	@Transactional
 	public List<Charger> showAll() {
+		System.out.println("http request is on port 8093.....");
 		List<Charger> list = chargerRepository.findAllByIsActiveTrue();
 		if (!list.isEmpty()) {
 			return list;
@@ -86,6 +94,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 		if (!chargerId.isBlank()) {
 			Charger charger = chargerConverter.dtoToEntity(chargerDto);
 			Charger obj = chargerRepository.findByChargerIdAndIsActiveTrue(chargerId);
+
 			if (obj != null) {
 
 				// if data is not valid then it will throw nullPointerException. that exception
@@ -159,13 +168,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 					if (!charger.getIsSmart().isBlank())
 						obj.setIsSmart(charger.getIsSmart());
 
-				if (charger.getCreatedDate() != null)
-					if (!charger.getCreatedDate().isBlank())
-						obj.setCreatedDate(charger.getCreatedDate());
-
-				if (charger.getModifiedDate() != null)
-					if (!charger.getModifiedDate().isBlank())
-						obj.setModifiedDate(charger.getModifiedDate());
+				obj.setModifiedDate(dateFormat.format(date));
 
 				if (charger.getCreatedBy() != null)
 					if (!charger.getCreatedBy().isBlank())
@@ -213,7 +216,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 	@Override
 	public List<Charger> showByChargerInputVoltage(String chargerInputVoltage) {
 
-		if (!chargerInputVoltage.isBlank()) {
+		if (!chargerInputVoltage.trim().isEmpty()) {
 
 			List<Charger> charger = chargerRepository.findByChargerInputVoltageAndIsActiveTrue(chargerInputVoltage);
 			if (charger != null) {

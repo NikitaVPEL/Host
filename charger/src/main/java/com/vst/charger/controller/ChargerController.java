@@ -26,6 +26,8 @@ public class ChargerController {
 
 	@Autowired
 	ChargerServiceImpl chargerServiceImpl;
+	
+	
 
 	@PostMapping("charger")
 	public ResponseEntity<String> addCharger(@Valid @RequestBody ChargerDto chargerDto) {
@@ -60,7 +62,7 @@ public class ChargerController {
 
 	}
 
-	@GetMapping("chargername")
+	@GetMapping("chargerName")
 	public ResponseEntity<List<Charger>> getChargerName(@RequestParam("chargerName") String chargerName) {
 		return ResponseEntity.ok(chargerServiceImpl.showByChargerName(chargerName));
 	}

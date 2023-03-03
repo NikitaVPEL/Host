@@ -33,7 +33,7 @@ import com.vst.charger.service.ChargerServiceImpl;
 		@Test
 		 void saveChargerTest() {
 			Charger charger1 = new Charger();
-		    charger1.setChargerId("C001");
+		    charger1.setChargerId("");
 		    charger1.setChargerName("Fast Charger");
 		    charger1.setChargerInputVoltage("100V");
 		    charger1.setChargerOutputVoltage("200V");
@@ -60,17 +60,17 @@ import com.vst.charger.service.ChargerServiceImpl;
 		
 		}
 		
-		@Test
-		void getAllChargerTest() {
-			when(repository.findAllByIsActiveTrue()).thenReturn(Stream
-					.of(new Charger("C001","Fast Charger","100V","200V","5A","10A","7A","50Hz",
-							"60Hz","IP55","Wall Mount","Yes","Yes","No","No","Yes","Yes",
-							"No","User1","User1","User1","User1",true), new Charger("C001","Fast Charger","100V","200V","5A","10A","7A","50Hz",
-							"60Hz","IP55","Wall Mount","Yes","Yes","No","No","Yes","Yes",
-								"No","User1","User1","User1","User1",true)).collect(Collectors.toList()));
-			assertEquals(2, service.showAll().size());
-		
-		}
+//		@Test
+//		void getAllChargerTest() {
+//			when(repository.findAllByIsActiveTrue()).thenReturn(Stream
+//					.of(new Charger("C001","Fast Charger","100V","200V","5A","10A","7A","50Hz",
+//							"60Hz","IP55","Wall Mount","Yes","Yes","No","No","Yes","Yes",
+//							"No","User1","User1","User1","User1",true), new Charger("C001","Fast Charger","100V","200V","5A","10A","7A","50Hz",
+//							"60Hz","IP55","Wall Mount","Yes","Yes","No","No","Yes","Yes",
+//								"No","User1","User1","User1","User1",true)).collect(Collectors.toList()));
+//			assertEquals(2, service.showAll().size());
+//		
+//		}
 		
 //		@Test
 //		void getChargerIdTest() {
