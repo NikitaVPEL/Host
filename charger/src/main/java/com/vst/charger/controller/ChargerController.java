@@ -27,8 +27,6 @@ public class ChargerController {
 	@Autowired
 	ChargerServiceImpl chargerServiceImpl;
 	
-	
-
 	@PostMapping("charger")
 	public ResponseEntity<String> addCharger(@Valid @RequestBody ChargerDto chargerDto) {
 		chargerServiceImpl.add(chargerDto);

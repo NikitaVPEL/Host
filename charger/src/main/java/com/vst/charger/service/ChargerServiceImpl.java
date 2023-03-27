@@ -216,7 +216,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 	@Override
 	public List<Charger> showByChargerInputVoltage(String chargerInputVoltage) {
 
-		if (!chargerInputVoltage.trim().isEmpty()) {
+		if (!chargerInputVoltage.isBlank()) {
 
 			List<Charger> charger = chargerRepository.findByChargerInputVoltageAndIsActiveTrue(chargerInputVoltage);
 			if (charger != null) {
