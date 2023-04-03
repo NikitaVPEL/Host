@@ -29,7 +29,7 @@ public class VendorRequestServiceImpl implements VendorRequestServiceInterface {
 
 	@Autowired
 	VendorRequestConverter vendorRequestConverter;
-	
+
 	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	Date date = new Date();
 
@@ -110,40 +110,33 @@ public class VendorRequestServiceImpl implements VendorRequestServiceInterface {
 			VendorRequest obj = vendorRequestRepository.findByVendorRequestIdAndIsActiveTrue(vendorRequestId);
 			if (obj != null) {
 
-				if (vendorRequest.getVendorRequestHostId() != null)
-					if (!vendorRequest.getVendorRequestHostId().isBlank())
-						obj.setVendorRequestHostId(vendorRequest.getVendorRequestHostId());
+				if (vendorRequest.getVendorRequestHostId() != null && !vendorRequest.getVendorRequestHostId().isBlank())
+					obj.setVendorRequestHostId(vendorRequest.getVendorRequestHostId());
 
-				if (vendorRequest.getVendorRequestType() != null)
-					if (!vendorRequest.getVendorRequestType().isBlank())
-						obj.setVendorRequestType(vendorRequest.getVendorRequestType());
+				if (vendorRequest.getVendorRequestType() != null && !vendorRequest.getVendorRequestType().isBlank())
+					obj.setVendorRequestType(vendorRequest.getVendorRequestType());
 
-				if (vendorRequest.getVendorRequestNoOfChargersRequired() != null)
-					if (!vendorRequest.getVendorRequestNoOfChargersRequired().isBlank())
-						obj.setVendorRequestNoOfChargersRequired(vendorRequest.getVendorRequestNoOfChargersRequired());
+				if (vendorRequest.getVendorRequestNoOfChargersRequired() != null
+						&& !vendorRequest.getVendorRequestNoOfChargersRequired().isBlank())
+					obj.setVendorRequestNoOfChargersRequired(vendorRequest.getVendorRequestNoOfChargersRequired());
 
-				if (vendorRequest.getVendorRequestLocation() != null)
-					if (!vendorRequest.getVendorRequestLocation().isBlank())
-						obj.setVendorRequestLocation(vendorRequest.getVendorRequestLocation());
+				if (vendorRequest.getVendorRequestLocation() != null
+						&& !vendorRequest.getVendorRequestLocation().isBlank())
+					obj.setVendorRequestLocation(vendorRequest.getVendorRequestLocation());
 
-				if (vendorRequest.getVendorRequestStatus() != null)
-					if (!vendorRequest.getVendorRequestStatus().isBlank())
-						obj.setVendorRequestStatus(vendorRequest.getVendorRequestStatus());
+				if (vendorRequest.getVendorRequestStatus() != null && !vendorRequest.getVendorRequestStatus().isBlank())
+					obj.setVendorRequestStatus(vendorRequest.getVendorRequestStatus());
 
-				if (vendorRequest.getVendorRequestDate() != null)
-//					if (!vendorRequest.getVendorRequestDate().isBlank())
-						obj.setVendorRequestDate(vendorRequest.getVendorRequestDate());
+				if (vendorRequest.getVendorRequestDate() != null && !vendorRequest.getVendorRequestDate().isBlank())
+					obj.setVendorRequestDate(vendorRequest.getVendorRequestDate());
 
-				if (vendorRequest.getCreatedBy() != null)
-					if (!vendorRequest.getCreatedBy().isBlank())
-						obj.setCreatedBy(vendorRequest.getCreatedBy());
+				if (vendorRequest.getCreatedBy() != null && !vendorRequest.getCreatedBy().isBlank())
+					obj.setCreatedBy(vendorRequest.getCreatedBy());
 
-				if (vendorRequest.getModifiedBy() != null)
-					if (!vendorRequest.getModifiedBy().isBlank())
-						obj.setModifiedBy(vendorRequest.getModifiedBy());
+				if (vendorRequest.getModifiedBy() != null && !vendorRequest.getModifiedBy().isBlank())
+					obj.setModifiedBy(vendorRequest.getModifiedBy());
 				
 				obj.setModifiedDate(dateFormat.format(date));
-
 
 				vendorRequestRepository.save(obj);
 			} else {

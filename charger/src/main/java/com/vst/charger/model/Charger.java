@@ -1,6 +1,7 @@
 package com.vst.charger.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -35,6 +36,9 @@ public class Charger {
 	private String chargerMountType;
 	private String isRFID;
 //	private String RFID;
+//	private String chargerSerialNumber;
+//	private String chargerProtocol;
+//	private String chargerConnectorType;
 	private String isAppSupport;
 	private String isTBCutOff;
 	private String isAntitheft;
@@ -46,4 +50,5 @@ public class Charger {
 	private String createdBy;
 	private String modifiedBy;
 	private boolean isActive;
+	private List<Gun> guns;
 }

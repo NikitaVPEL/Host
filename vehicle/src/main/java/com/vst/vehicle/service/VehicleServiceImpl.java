@@ -107,76 +107,59 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 			Vehicle obj = vehicleRepository.findByVehicleIdAndIsActiveTrue(vehicleId);
 
 			if (obj != null) {
-				if (vehicle.getVehicleBrandName() != null)
-					if (!vehicle.getVehicleBrandName().isBlank())
+				if (vehicle.getVehicleBrandName() != null && !vehicle.getVehicleBrandName().isBlank())
 						obj.setVehicleBrandName(vehicle.getVehicleBrandName());
 
-				if (vehicle.getVehicleModelName() != null)
-					if (!vehicle.getVehicleModelName().isBlank())
+				if (vehicle.getVehicleModelName() != null && !vehicle.getVehicleModelName().isBlank())
 						obj.setVehicleModelName(vehicle.getVehicleModelName());
 
-				if (vehicle.getVehicleClass() != null)
-					if (!vehicle.getVehicleClass().isBlank())
+				if (vehicle.getVehicleClass() != null && !vehicle.getVehicleClass().isBlank())
 						obj.setVehicleClass(vehicle.getVehicleClass());
 
-				if (vehicle.getVehicleColour() != null)
-					if (!vehicle.getVehicleColour().isBlank())
+				if (vehicle.getVehicleColour() != null && !vehicle.getVehicleColour().isBlank())
 						obj.setVehicleColour(vehicle.getVehicleColour());
 
 				if (vehicle.getVehicleBatteryType() != null)
 					if (!vehicle.getVehicleBatteryType().isBlank())
 						obj.setVehicleBatteryType(vehicle.getVehicleBatteryType());
 
-				if (vehicle.getVehicleBatteryCapacity() != null)
-					if (!vehicle.getVehicleBatteryCapacity().isBlank())
+				if (vehicle.getVehicleBatteryCapacity() != null && !vehicle.getVehicleBatteryCapacity().isBlank())
 						obj.setVehicleBatteryCapacity(vehicle.getVehicleBatteryCapacity());
 
-				if (vehicle.getVehicleAdaptorType() != null)
-					if (!vehicle.getVehicleAdaptorType().isBlank())
+				if (vehicle.getVehicleAdaptorType() != null && !vehicle.getVehicleAdaptorType().isBlank())
 						obj.setVehicleAdaptorType(vehicle.getVehicleAdaptorType());
 
-				if (vehicle.getVehicleTimeToChargeRegular() != null)
-					if (!vehicle.getVehicleTimeToChargeRegular().isBlank())
+				if (vehicle.getVehicleTimeToChargeRegular() != null && !vehicle.getVehicleTimeToChargeRegular().isBlank())
 						obj.setVehicleTimeToChargeRegular(vehicle.getVehicleTimeToChargeRegular());
 
-				if (vehicle.getVehicleTimeToChargeFast() != null)
-					if (!vehicle.getVehicleTimeToChargeFast().isBlank())
+				if (vehicle.getVehicleTimeToChargeFast() != null && !vehicle.getVehicleTimeToChargeFast().isBlank())
 						obj.setVehicleTimeToChargeFast(vehicle.getVehicleTimeToChargeFast());
 
-				if (vehicle.getVehicleChargingStandard() != null)
-					if (!vehicle.getVehicleChargingStandard().isBlank())
+				if (vehicle.getVehicleChargingStandard() != null && !vehicle.getVehicleChargingStandard().isBlank())
 						obj.setVehicleChargingStandard(vehicle.getVehicleChargingStandard());
 
-				if (vehicle.getVehicleRange() != null)
-					if (!vehicle.getVehicleRange().isBlank())
+				if (vehicle.getVehicleRange() != null && !vehicle.getVehicleRange().isBlank())
 						obj.setVehicleRange(vehicle.getVehicleRange());
 
-				if (vehicle.getVehicleMotorType() != null)
-					if (!vehicle.getVehicleMotorType().isBlank())
+				if (vehicle.getVehicleMotorType() != null && !vehicle.getVehicleMotorType().isBlank())
 						obj.setVehicleMotorType(vehicle.getVehicleMotorType());
 
-				if (vehicle.getVehicleMotorPower() != null)
-					if (!vehicle.getVehicleMotorPower().isBlank())
+				if (vehicle.getVehicleMotorPower() != null && !vehicle.getVehicleMotorPower().isBlank())
 						obj.setVehicleMotorPower(vehicle.getVehicleMotorPower());
 
-				if (vehicle.getVehicleMotorTorque() != null)
-					if (!vehicle.getVehicleMotorTorque().isBlank())
+				if (vehicle.getVehicleMotorTorque() != null && !vehicle.getVehicleMotorTorque().isBlank())
 						obj.setVehicleMotorTorque(vehicle.getVehicleMotorTorque());
 
-				if (vehicle.getVehicleDriveModes() != null)
-					if (!vehicle.getVehicleDriveModes().isBlank())
+				if (vehicle.getVehicleDriveModes() != null && !vehicle.getVehicleDriveModes().isBlank())
 						obj.setVehicleDriveModes(vehicle.getVehicleDriveModes());
 
-				if (vehicle.getVehicleDimentions() != null)
-					if (!vehicle.getVehicleDimentions().isBlank())
+				if (vehicle.getVehicleDimentions() != null && !vehicle.getVehicleDimentions().isBlank())
 						obj.setVehicleDimentions(vehicle.getVehicleDimentions());
 
-				if (vehicle.getCreatedBy() != null)
-					if (!vehicle.getCreatedBy().isBlank())
+				if (vehicle.getCreatedBy() != null && !vehicle.getCreatedBy().isBlank())
 						obj.setCreatedBy(vehicle.getCreatedBy());
 
-				if (vehicle.getModifiedBy() != null)
-					if (!vehicle.getModifiedBy().isBlank())
+				if (vehicle.getModifiedBy() != null && !vehicle.getModifiedBy().isBlank())
 						obj.setModifiedBy(vehicle.getModifiedBy());
 				
 				obj.setModifiedDate(dateFormat.format(date));
@@ -197,7 +180,7 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 
 		if (!vehicleBrandName.isBlank()) {
 			List<Vehicle> vehicle = vehicleRepository.findByVehicleBrandNameAndIsActiveTrue(vehicleBrandName);
-			if (vehicle != null) {
+			if (!vehicle.isEmpty()) {
 				return vehicle;
 			} else {
 				throw new VehicleNotFoundException("data of given id is not available in the database");
@@ -213,7 +196,7 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 
 		if (!vehicleModelName.isBlank()) {
 			List<Vehicle> vehicle = vehicleRepository.findByVehicleModelNameAndIsActiveTrue(vehicleModelName);
-			if (vehicle != null) {
+			if (!vehicle.isEmpty()) {
 				return vehicle;
 			} else {
 				throw new VehicleNotFoundException("data of given id is not available in the database");
@@ -229,7 +212,7 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 
 		if (!vehicleClass.isBlank()) {
 			List<Vehicle> vehicle = vehicleRepository.findByVehicleClassAndIsActiveTrue(vehicleClass);
-			if (vehicle != null) {
+			if (!vehicle.isEmpty()) {
 				return vehicle;
 			} else {
 				throw new VehicleNotFoundException("data of given id is not available in the database");
@@ -245,7 +228,7 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 
 		if (!vehicleBatteryType.isBlank()) {
 			List<Vehicle> vehicle = vehicleRepository.findByVehicleBatteryTypeAndIsActiveTrue(vehicleBatteryType);
-			if (vehicle != null) {
+			if (!vehicle.isEmpty()) {
 				return vehicle;
 			} else {
 				throw new VehicleNotFoundException("data of given id is not available in the database");
@@ -262,7 +245,7 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 		if (!vehicleBatteryCapacity.isBlank()) {
 			List<Vehicle> vehicle = vehicleRepository
 					.findByVehicleBatteryCapacityAndIsActiveTrue(vehicleBatteryCapacity);
-			if (vehicle != null) {
+			if (!vehicle.isEmpty()) {
 				return vehicle;
 			} else {
 				throw new VehicleNotFoundException("data of given id is not available in the database");
@@ -278,7 +261,7 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 
 		if (!vehicleAdaptorType.isBlank()) {
 			List<Vehicle> vehicle = vehicleRepository.findByVehicleAdaptorTypeAndIsActiveTrue(vehicleAdaptorType);
-			if (vehicle != null) {
+			if (!vehicle.isEmpty()) {
 				return vehicle;
 			} else {
 				throw new VehicleNotFoundException("data of given id is not available in the database");
@@ -294,7 +277,7 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 
 		if (!vehicleMotorType.isBlank()) {
 			List<Vehicle> vehicle = vehicleRepository.findByVehicleMotorTypeAndIsActiveTrue(vehicleMotorType);
-			if (vehicle != null) {
+			if (!vehicle.isEmpty()) {
 				return vehicle;
 			} else {
 				throw new VehicleNotFoundException("data of given id is not available in the database");
@@ -311,7 +294,7 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 		if (!vehicleMotorPower.isBlank()) {
 
 			List<Vehicle> vehicle = vehicleRepository.findByVehicleMotorPowerAndIsActiveTrue(vehicleMotorPower);
-			if (vehicle != null) {
+			if (!vehicle.isEmpty()) {
 
 				return vehicle;
 			} else {
@@ -330,7 +313,7 @@ public class VehicleServiceImpl implements VehicleServiceInterface {
 		if (!vehicleMotorTorque.isBlank()) {
 
 			List<Vehicle> vehicle = vehicleRepository.findByVehicleMotorTorqueAndIsActiveTrue(vehicleMotorTorque);
-			if (vehicle != null) {
+			if (!vehicle.isEmpty()) {
 
 				return vehicle;
 			} else {

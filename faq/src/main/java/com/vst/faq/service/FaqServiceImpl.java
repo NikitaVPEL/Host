@@ -84,30 +84,24 @@ public class FaqServiceImpl implements FaqServiceInterface {
 			Faq obj = faqRepository.findByFaqIdAndIsActiveTrue(faqId);
 			if (obj != null) {
 
-				if (faq.getFaqQuestion() != null)
-					if (!faq.getFaqQuestion().isBlank())
+				if (faq.getFaqQuestion() != null && !faq.getFaqQuestion().isBlank())
 						obj.setFaqQuestion(faq.getFaqQuestion());
 
-				if (faq.getFaqAnswer() != null)
-					if (!faq.getFaqAnswer().isBlank())
+				if (faq.getFaqAnswer() != null && !faq.getFaqAnswer().isBlank())
 						obj.setFaqAnswer(faq.getFaqAnswer());
 
-				if (faq.getFaqCategory() != null)
-					if (!faq.getFaqCategory().isBlank())
+				if (faq.getFaqCategory() != null && !faq.getFaqCategory().isBlank())
 						obj.setFaqCategory(faq.getFaqCategory());
 
-				if (faq.getFaqType() != null)
-					if (!faq.getFaqType().isBlank())
+				if (faq.getFaqType() != null && !faq.getFaqType().isBlank())
 						obj.setFaqType(faq.getFaqType());
 
 						obj.setModifiedDate(dateFormat.format(date));
 
-				if (faq.getCreatedBy() != null)
-					if (!faq.getCreatedBy().isBlank())
+				if (faq.getCreatedBy() != null && !faq.getCreatedBy().isBlank())
 						obj.setCreatedBy(faq.getCreatedBy());
 
-				if (faq.getModifiedBy() != null)
-					if (!faq.getModifiedBy().isBlank())
+				if (faq.getModifiedBy() != null && !faq.getModifiedBy().isBlank())
 						obj.setModifiedBy(faq.getModifiedBy());
 
 				faqRepository.save(obj);
@@ -143,7 +137,7 @@ public class FaqServiceImpl implements FaqServiceInterface {
 		if (!faqQuestion.isBlank()) {
 
 			List<Faq> faq = faqRepository.findByFaqQuestionAndIsActiveTrue(faqQuestion);
-			if (faq != null) {
+			if (!faq.isEmpty()) {
 
 				return faq;
 			} else {
@@ -159,7 +153,7 @@ public class FaqServiceImpl implements FaqServiceInterface {
 		if (!faqCategory.isBlank()) {
 
 			List<Faq> faq = faqRepository.findByFaqCategoryAndIsActiveTrue(faqCategory);
-			if (faq != null) {
+			if (!faq.isEmpty()) {
 
 				return faq;
 			} else {
@@ -175,7 +169,7 @@ public class FaqServiceImpl implements FaqServiceInterface {
 		if (!faqType.isBlank()) {
 
 			List<Faq> faq = faqRepository.findByFaqTypeAndIsActiveTrue(faqType);
-			if (faq != null) {
+			if (!faq.isEmpty()) {
 
 				return faq;
 			} else {

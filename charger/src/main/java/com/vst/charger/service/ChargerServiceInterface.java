@@ -8,6 +8,7 @@ import com.vst.charger.model.Charger;
 public interface ChargerServiceInterface {
 
 	public String add(ChargerDto chargerDto);
+	
 	public Charger show(String chargerId);
 
 	public List<Charger> showAll();

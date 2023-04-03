@@ -30,7 +30,7 @@ public class VendorRequest {
     private String vendorRequestLocation;
     private String vendorRequestStatus;
 	@Indexed
-    private LocalDate vendorRequestDate;
+    private String vendorRequestDate;
     private String createdDate;
     private String modifiedDate;
     private String createdBy;

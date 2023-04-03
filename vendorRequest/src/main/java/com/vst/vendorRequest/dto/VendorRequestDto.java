@@ -56,7 +56,7 @@ public class VendorRequestDto {
 	@Pattern(regexp = "^(?:(?:(?:0[1-9]|1\\d|2[0-8])\\/(?:0[1-9]|1[0-2])|(?:29|30)\\/(?:0[13-9]|1[0-2])|31\\/(?:0"
 			+ "[13578]|1[02]))\\/[1-9]\\d{3}|29\\/02(?:\\/[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]"
 			+ "|[13579][26])00))$",message = "date must be dd/mm/yyyy")
-	private LocalDate vendorRequestDate;
+	private String vendorRequestDate;
 
 	private String createdDate;
 

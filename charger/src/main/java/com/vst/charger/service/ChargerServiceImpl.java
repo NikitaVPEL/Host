@@ -35,9 +35,12 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 	ChargerSequenceGeneratorService chargerSequenceGeneratorService;
 
 	public static final Logger logger = LogManager.getLogger(ChargerServiceImpl.class);
-	
+
+	Date date = new Date();
+
 	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		Date date = new Date();
+
+
 
 	@Override
 	@Transactional
@@ -46,9 +49,12 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 		// data the given data is not valid then it will throw
 		// MethodArgumentNotValidException and that exception will catch by
 		// handleInvalidException method of ApiError class.
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyyHHmmss.SSS");
+		String idFormat = "CHR" + dateFormat.format(date);
 
 		Charger charger = chargerConverter.dtoToEntity(chargerDto);
-		charger.setChargerId(chargerSequenceGeneratorService.idGenerator());
+		charger.setChargerId(idFormat);
 		charger.setCreatedDate(dateFormat.format(date));
 		charger.setModifiedDate(dateFormat.format(date));
 		charger.setActive(true);
@@ -78,7 +84,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 	@Override
 	@Transactional
 	public List<Charger> showAll() {
-		System.out.println("http request is on port 8093.....");
+		
 		List<Charger> list = chargerRepository.findAllByIsActiveTrue();
 		if (!list.isEmpty()) {
 			return list;
@@ -100,82 +106,63 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 				// if data is not valid then it will throw nullPointerException. that exception
 				// will catch by chargerApiError class method nullpoint
 
-				if (charger.getChargerName() != null)
-					if (!charger.getChargerName().isBlank())
+				if (charger.getChargerName() != null && !charger.getChargerName().isBlank())
 						obj.setChargerName(charger.getChargerName());
 
-				if (charger.getChargerInputVoltage() != null)
-					if (!charger.getChargerInputVoltage().isBlank())
+				if (charger.getChargerInputVoltage() != null && !charger.getChargerInputVoltage().isBlank())
 						obj.setChargerInputVoltage(charger.getChargerInputVoltage());
 
-				if (charger.getChargerOutputVoltage() != null)
-					if (!charger.getChargerOutputVoltage().isBlank())
+				if (charger.getChargerOutputVoltage() != null && !charger.getChargerOutputVoltage().isBlank())
 						obj.setChargerOutputVoltage(charger.getChargerOutputVoltage());
 
-				if (charger.getChargerMinInputAmpere() != null)
-					if (!charger.getChargerMinInputAmpere().isBlank())
+				if (charger.getChargerMinInputAmpere() != null && !charger.getChargerMinInputAmpere().isBlank())
 						obj.setChargerMinInputAmpere(charger.getChargerMinInputAmpere());
 
-				if (charger.getChargerMaxInputAmpere() != null)
-					if (!charger.getChargerMaxInputAmpere().isBlank())
+				if (charger.getChargerMaxInputAmpere() != null && !charger.getChargerMaxInputAmpere().isBlank())
 						obj.setChargerMaxInputAmpere(charger.getChargerMaxInputAmpere());
 
-				if (charger.getChargerOutputAmpere() != null)
-					if (!charger.getChargerOutputAmpere().isBlank())
+				if (charger.getChargerOutputAmpere() != null && !charger.getChargerOutputAmpere().isBlank())
 						obj.setChargerOutputAmpere(charger.getChargerOutputAmpere());
 
-				if (charger.getChargerInputFrequency() != null)
-					if (!charger.getChargerInputFrequency().isBlank())
+				if (charger.getChargerInputFrequency() != null && !charger.getChargerInputFrequency().isBlank())
 						obj.setChargerInputFrequency(charger.getChargerInputFrequency());
 
-				if (charger.getChargerOutputFrequency() != null)
-					if (!charger.getChargerOutputFrequency().isBlank())
+				if (charger.getChargerOutputFrequency() != null && !charger.getChargerOutputFrequency().isBlank())
 						obj.setChargerOutputFrequency(charger.getChargerOutputFrequency());
 
-				if (charger.getChargerIPRating() != null)
-					if (!charger.getChargerIPRating().isBlank())
+				if (charger.getChargerIPRating() != null && !charger.getChargerIPRating().isBlank())
 						obj.setChargerIPRating(charger.getChargerIPRating());
 
-				if (charger.getChargerMountType() != null)
-					if (!charger.getChargerMountType().isBlank())
+				if (charger.getChargerMountType() != null && !charger.getChargerMountType().isBlank())
 						obj.setChargerMountType(charger.getChargerMountType());
 
-				if (charger.getIsRFID() != null)
-					if (!charger.getIsRFID().isBlank())
+				if (charger.getIsRFID() != null && !charger.getIsRFID().isBlank())
 						obj.setIsRFID(charger.getIsRFID());
 
-				if (charger.getIsAppSupport() != null)
-					if (!charger.getIsAppSupport().isBlank())
+				if (charger.getIsAppSupport() != null && !charger.getIsAppSupport().isBlank())
 						obj.setIsAppSupport(charger.getIsAppSupport());
 
-				if (charger.getIsTBCutOff() != null)
-					if (!charger.getIsTBCutOff().isBlank())
+				if (charger.getIsTBCutOff() != null && !charger.getIsTBCutOff().isBlank())
 						obj.setIsTBCutOff(charger.getIsTBCutOff());
 
-				if (charger.getIsAntitheft() != null)
-					if (!charger.getIsAntitheft().isBlank())
+				if (charger.getIsAntitheft() != null && !charger.getIsAntitheft().isBlank())
 						obj.setIsAntitheft(charger.getIsAntitheft());
 
-				if (charger.getIsLEDDisplay() != null)
-					if (!charger.getIsLEDDisplay().isBlank())
+				if (charger.getIsLEDDisplay() != null && !charger.getIsLEDDisplay().isBlank())
 						obj.setIsLEDDisplay(charger.getIsLEDDisplay());
 
-				if (charger.getIsLEDIndications() != null)
-					if (!charger.getIsLEDIndications().isBlank())
+				if (charger.getIsLEDIndications() != null && !charger.getIsLEDIndications().isBlank())
 						obj.setIsLEDIndications(charger.getIsLEDIndications());
 
-				if (charger.getIsSmart() != null)
-					if (!charger.getIsSmart().isBlank())
+				if (charger.getIsSmart() != null && !charger.getIsSmart().isBlank())
 						obj.setIsSmart(charger.getIsSmart());
 
 				obj.setModifiedDate(dateFormat.format(date));
 
-				if (charger.getCreatedBy() != null)
-					if (!charger.getCreatedBy().isBlank())
+				if (charger.getCreatedBy() != null && !charger.getCreatedBy().isBlank())
 						obj.setCreatedBy(charger.getCreatedBy());
 
-				if (charger.getModifiedBy() != null)
-					if (!charger.getModifiedBy().isBlank())
+				if (charger.getModifiedBy() != null && !charger.getModifiedBy().isBlank())
 						obj.setModifiedBy(charger.getModifiedBy());
 
 				chargerRepository.save(obj);
@@ -209,17 +196,29 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 
 	@Override
 	public List<Charger> showByChargerName(String chargerName) {
-		return chargerRepository.findByChargerNameAndIsActiveTrue(chargerName);
+		if (!chargerName.isBlank()) {
 
+			List<Charger> charger = chargerRepository.findByChargerNameAndIsActiveTrue(chargerName);
+			if (!charger.isEmpty()) {
+
+				return charger;
+			} else {
+				throw new ChargerNotFoundException("data of given id is not available in the database");
+			}
+		} else {
+			throw new ChargerIdNotAcceptableException("entered details is null or not valid ,please enter correct id");
+		}
 	}
 
+
+	
 	@Override
 	public List<Charger> showByChargerInputVoltage(String chargerInputVoltage) {
 
 		if (!chargerInputVoltage.isBlank()) {
 
 			List<Charger> charger = chargerRepository.findByChargerInputVoltageAndIsActiveTrue(chargerInputVoltage);
-			if (charger != null) {
+			if (!charger.isEmpty()) {
 
 				return charger;
 			} else {
@@ -235,7 +234,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 		if (!chargerOutputVoltage.isBlank()) {
 
 			List<Charger> charger = chargerRepository.findByChargerOutputVoltageAndIsActiveTrue(chargerOutputVoltage);
-			if (charger != null) {
+			if (!charger.isEmpty()) {
 				return charger;
 			} else {
 				throw new ChargerNotFoundException("data of given id is not available in the database");
@@ -250,7 +249,7 @@ public class ChargerServiceImpl implements ChargerServiceInterface {
 		if (!chargerMountType.isBlank()) {
 
 			List<Charger> charger = chargerRepository.findByChargerMountTypeAndIsActiveTrue(chargerMountType);
-			if (charger != null) {
+			if (!charger.isEmpty()) {
 				return charger;
 			} else {
 				throw new ChargerNotFoundException("data of given id is not available in the database");
