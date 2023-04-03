@@ -3,7 +3,6 @@ package com.vst.host.service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.vst.host.converter.HostConverter;
 import com.vst.host.converter.SettlementConverter;
@@ -28,22 +28,15 @@ import com.vst.host.model.Settlement;
 import com.vst.host.model.Wallet;
 import com.vst.host.repository.HostRepository;
 
-import net.bytebuddy.description.modifier.FieldManifestation;
-
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.aggregation.MatchOperation;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
-import org.springframework.data.mongodb.core.aggregation.UnwindOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.ZeroCopyHttpOutputMessage;
+
 
 @Service
 public class HostServiceImpl implements HostServiceInterface {
 
+		
 	@Autowired
 	HostRepository hostRepository;
 
@@ -389,12 +382,6 @@ public class HostServiceImpl implements HostServiceInterface {
 		return host;
 	}
 
-	public Settlement getSettlement(String settlementId) {
-		
-		Settlement settlement = hostRepository.getSettlement(settlementId);
-		System.out.println(settlement);
-		
-		return null;
-	}
+
 
 }

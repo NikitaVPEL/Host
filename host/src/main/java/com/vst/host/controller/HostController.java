@@ -156,9 +156,6 @@ public class HostController {
 		return ResponseEntity.ok(hostServiceImpl.getHostDetailsById(hostId));
 	}
 	
-	@GetMapping("/getHostDetails2")
-	public ResponseEntity<Settlement> getSettlement(@RequestParam("settlementId") String settlementId){
-		return ResponseEntity.ok(hostServiceImpl.getSettlement(settlementId));
-	}
+
 
 }

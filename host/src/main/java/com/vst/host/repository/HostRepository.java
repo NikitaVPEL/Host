@@ -47,9 +47,6 @@ public interface HostRepository extends MongoRepository<Host, String> {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	Host findByHostId(String hostId);
 
-	@Query(value = "{'settlements._id':?0, 'settlements.isActive':true}",fields="{'settlements.$':1}")
-	Settlement getSettlement(String settlementId);
-
 
 	
 }
