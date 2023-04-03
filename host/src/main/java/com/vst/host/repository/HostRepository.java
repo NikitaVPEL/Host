@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vst.host.model.Host;
 import com.vst.host.model.Settlement;
 import com.vst.host.model.Wallet;
@@ -35,15 +36,20 @@ public interface HostRepository extends MongoRepository<Host, String> {
 	List<Host> findByHostFirstNameAndHostMiddleNameAndHostLastNameAndIsActiveTrue(String hostFirstName,
 			String hostMiddleName, String hostLastName);
 
-	@Query("{ 'hostId': ?0, 'settlements.settlementDate': ?1 }")
-	Host findByHostIdAndSettlementDate(String hostId, String settlementDate);
-
-	@Aggregation(pipeline = { "{ '$match' : { 'hostId' : ?0}}", "{ '$unwind' : {'path' :'$settlements'}}",
+	@Aggregation(pipeline = { "{ '$match' : { 'hostId' : ?0,'isActive':true}}", "{ '$unwind' : {'path' :'$settlements'}}",
 			"{ '$match' : { 'settlements.settlementDate' : ?1}}",
 			"{ '$group' : { '_id' : '$_id', 'settlements' : { '$push' : '$settlements'}}}",
 			"{ '$project' : { 'settlements' : 1}}" }) 
 	Host findBySettlementMatching(String hostId, String settlementDate);
+	
 
-	Host findByHostId
+	@Query(value = "{'_id': ?0, 'isActive': true}", fields = "{'settlements': 0, 'wallets': 0}")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	Host findByHostId(String hostId);
+
+	@Query(value = "{'settlements._id':?0, 'settlements.isActive':true}",fields="{'settlements.$':1}")
+	Settlement getSettlement(String settlementId);
+
+
 	
 }

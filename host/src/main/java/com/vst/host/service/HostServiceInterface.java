@@ -49,5 +49,5 @@ public interface HostServiceInterface {
 
 	public List<Settlement> getByHostIdAndSettlementsDate1(String hostId, String settlementDate);
 
-	Host getHostDetailsById(String hostId);
+	public Host getHostDetailsById(String hostId);
 }

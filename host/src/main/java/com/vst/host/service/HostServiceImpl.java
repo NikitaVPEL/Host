@@ -39,6 +39,7 @@ import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.UnwindOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.ZeroCopyHttpOutputMessage;
 
 @Service
 public class HostServiceImpl implements HostServiceInterface {
@@ -366,6 +367,7 @@ public class HostServiceImpl implements HostServiceInterface {
 		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria),
 				Aggregation.unwind("settlements"), Aggregation.match(matchCriteria2), groupOperation,
 				Aggregation.project("_id", "settlements"));
+		
 
 		Host host = mongoTemplate.aggregate(aggregation, "host", Host.class).getUniqueMappedResult();
 		List<Settlement> settlements = host.getSettlements();
@@ -377,14 +379,21 @@ public class HostServiceImpl implements HostServiceInterface {
 	public List<Settlement> getByHostIdAndSettlementsDate1(String hostId, String settlementDate) {
 
 		Host host = hostRepository.findBySettlementMatching(hostId, settlementDate);
-		System.out.println(host);
 		List<Settlement> settlements = host.getSettlements();
-		System.out.println(settlements);
 		return settlements;
 	}
 
 	@Override
 	public Host getHostDetailsById(String hostId) {
+	Host host=hostRepository.findByHostId(hostId);
+		return host;
+	}
+
+	public Settlement getSettlement(String settlementId) {
+		
+		Settlement settlement = hostRepository.getSettlement(settlementId);
+		System.out.println(settlement);
+		
 		return null;
 	}
 
