@@ -5,13 +5,6 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
 @Document(collection = "host")
 public class Host {
 
@@ -23,7 +16,7 @@ public class Host {
 	private String hostEmail;
 	private String hostContactNo;
 	private String hostAddress;
-	private String hostVehicleRegNo;
+	private String hostVehicleRegistrationNo;
 	private String hostVehicleChargerType;
 	private String hostCity;
 	private String createdDate;
@@ -76,11 +69,11 @@ public class Host {
 	public void setHostAddress(String hostAddress) {
 		this.hostAddress = hostAddress;
 	}
-	public String getHostVehicleRegNo() {
-		return hostVehicleRegNo;
+	public String getHostVehicleRegistrationNo() {
+		return hostVehicleRegistrationNo;
 	}
-	public void setHostVehicleRegNo(String hostVehicleRegNo) {
-		this.hostVehicleRegNo = hostVehicleRegNo;
+	public void setHostVehicleRegistrationNo(String hostVehicleRegNo) {
+		this.hostVehicleRegistrationNo = hostVehicleRegNo;
 	}
 	public String getHostVehicleChargerType() {
 		return hostVehicleChargerType;
@@ -149,7 +142,7 @@ public class Host {
 		this.hostEmail = hostEmail;
 		this.hostContactNo = hostContactNo;
 		this.hostAddress = hostAddress;
-		this.hostVehicleRegNo = hostVehicleRegNo;
+		this.hostVehicleRegistrationNo = hostVehicleRegNo;
 		this.hostVehicleChargerType = hostVehicleChargerType;
 		this.hostCity = hostCity;
 		this.createdDate = createdDate;
@@ -169,14 +162,14 @@ public class Host {
 	public String toString() {
 		return "Host [hostId=" + hostId + ", hostFirstName=" + hostFirstName + ", hostMiddleName=" + hostMiddleName
 				+ ", hostLastName=" + hostLastName + ", hostEmail=" + hostEmail + ", hostContactNo=" + hostContactNo
-				+ ", hostAddress=" + hostAddress + ", hostVehicleRegNo=" + hostVehicleRegNo
+				+ ", hostAddress=" + hostAddress + ", hostVehicleRegNo=" + hostVehicleRegistrationNo
 				+ ", hostVehicleChargerType=" + hostVehicleChargerType + ", hostCity=" + hostCity + ", createdDate="
 				+ createdDate + ", modifiedDate=" + modifiedDate + ", createdBy=" + createdBy + ", modifiedBy="
 				+ modifiedBy + ", isActive=" + isActive + ", wallets=" + wallets + ", settlements=" + settlements
 				+ ", getHostId()=" + getHostId() + ", getHostFirstName()=" + getHostFirstName()
 				+ ", getHostMiddleName()=" + getHostMiddleName() + ", getHostLastName()=" + getHostLastName()
 				+ ", getHostEmail()=" + getHostEmail() + ", getHostContactNo()=" + getHostContactNo()
-				+ ", getHostAddress()=" + getHostAddress() + ", getHostVehicleRegNo()=" + getHostVehicleRegNo()
+				+ ", getHostAddress()=" + getHostAddress() + ", getHostVehicleRegNo()=" + getHostVehicleRegistrationNo()
 				+ ", getHostVehicleChargerType()=" + getHostVehicleChargerType() + ", getHostCity()=" + getHostCity()
 				+ ", getCreatedDate()=" + getCreatedDate() + ", getModifiedDate()=" + getModifiedDate()
 				+ ", getCreatedBy()=" + getCreatedBy() + ", getModifiedBy()=" + getModifiedBy() + ", isActive()="

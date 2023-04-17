@@ -23,7 +23,7 @@ public interface HostRepository extends MongoRepository<Host, String> {
 
 	List<Host> findByHostEmailAndIsActiveTrue(String hostEmail);
 
-	List<Host> findByHostVehicleRegNoAndIsActiveTrue(String hostVehicleRegNo);
+	List<Host> findByHostVehicleRegistrationNoAndIsActiveTrue(String hostVehicleRegistrationNo);
 
 	List<Host> findByHostVehicleChargerTypeAndIsActiveTrue(String hostVehicleChargerType);
 

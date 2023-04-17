@@ -11,9 +11,6 @@ import javax.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 
-import com.vst.host.model.Settlement;
-import com.vst.host.model.Wallet;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -68,7 +65,7 @@ public class HostDto {
 	@NotBlank(message = "Please Enter VehicleRegNo")
 	@NotNull(message = "Please Provide VehicleRegNo")
 	@Pattern(regexp ="^[A-Z]{2}\\s[0-9]{2}\\s[A-Z]{2}\\s[0-9]{4}$",message ="please Enter Correct VehicalRegNo ")
-	private String hostVehicleRegNo;
+	private String hostVehicleRegistrationNo;
 	
 	@NotNull(message = "Please Provide VehicleChargerType ")
 	@NotBlank(message ="Please Enter VehicleChargerType ")

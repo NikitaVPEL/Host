@@ -6,21 +6,33 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.sound.sampled.Line;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.aspectj.lang.reflect.CatchClauseSignature;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.vst.host.configuration.MongoDbConfiguration;
 import com.vst.host.converter.HostConverter;
 import com.vst.host.converter.SettlementConverter;
 import com.vst.host.converter.WalletConverter;
 import com.vst.host.dto.HostDto;
 import com.vst.host.dto.SettlementDto;
 import com.vst.host.dto.WalletDto;
+import com.vst.host.exception.HostException;
 import com.vst.host.exception.NotAcceptableException;
 import com.vst.host.exception.NotFoundException;
 import com.vst.host.model.Host;
@@ -28,15 +40,9 @@ import com.vst.host.model.Settlement;
 import com.vst.host.model.Wallet;
 import com.vst.host.repository.HostRepository;
 
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.query.Criteria;
-
-
 @Service
 public class HostServiceImpl implements HostServiceInterface {
 
-		
 	@Autowired
 	HostRepository hostRepository;
 
@@ -55,60 +61,127 @@ public class HostServiceImpl implements HostServiceInterface {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
+	@Autowired
+	MongoDbConfiguration mongoDbConfiguration;
 	public static final Logger logger = LogManager.getLogger(HostServiceImpl.class);
 
-	Date date = new Date();
-	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	public String idGenerator() {
 
-	SimpleDateFormat idDateFormat = new SimpleDateFormat("ddMMyyyyHHmmssSSS");
-
-	String settlementIdFormat = "STM" + idDateFormat.format(date);
-
-	@Transactional // to avoid rollback on listed exception
-	public String add(HostDto hostDto) {
-
-		String hostIdFormat = "HST" + idDateFormat.format(date);
-		String walletIdFormat = "WLT" + idDateFormat.format(date);
-
-		Host host = hostConverter.dtoToEntity(hostDto);
-		host.setHostId(hostIdFormat);
-		host.setCreatedDate(dateFormat.format(date));
-		host.setModifiedDate(dateFormat.format(date));
-		host.setActive(true);
-
-		host.setWallets(new Wallet());
-		Wallet wallet = host.getWallets();
-		wallet.setWalletId(walletIdFormat);
-		host.setWallets(wallet);
-
-		host.setSettlements(new ArrayList<Settlement>());
-
-		hostRepository.save(host);
-		return "host saved successfully";
+		Date dNow = new Date();
+		SimpleDateFormat idDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		String idGen = idDateFormat.format(dNow);
+		return idGen;
 	}
 
+	public String dateSetter() {
+		Date dNow = new Date();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		String date = dateFormat.format(dNow);
+		return date;
+	}
+
+	@Transactional // To avoid rollback on listed exception
+	@Override
+	public void add(@Valid HostDto hostDto) {
+
+		try {
+			mongoDbConfiguration.mongoClient();
+
+			Host host = hostConverter.dtoToEntity(hostDto);
+			host.setHostId("HST" + idGenerator());
+			host.setCreatedDate(dateSetter());
+			host.setModifiedDate(dateSetter());
+			host.setActive(true);
+
+			host.setWallets(new Wallet());
+			host.setSettlements(new ArrayList<Settlement>());
+			hostRepository.save(host);
+
+		} catch (HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+
+		} finally {
+			mongoDbConfiguration.cleanUp();
+			System.out.println("finally");
+		}
+
+	}
+
+	@SuppressWarnings("finally")
+	@Transactional
 	@Override
 	public Host show(String hostId) {
-		if (!hostId.isBlank()) {
-			Host obj = hostRepository.findByHostIdAndIsActiveTrue(hostId);
-			if (obj != null) {
-				return obj;
-			} else {
-				throw new NotFoundException("data of given id is not available in the database");
+
+		try {
+			mongoDbConfiguration.mongoClient();
+
+			if (!hostId.isBlank()) {
+				Host obj = hostRepository.findByHostIdAndIsActiveTrue(hostId);
+
+				try {
+					if (obj != null)
+						return obj;
+
+				} catch (Exception e) {
+					throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
+				}
 			}
-		} else
-			throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
+		} catch (HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new NotFoundException("data of given id is not available in the database");
+		} finally {
+			mongoDbConfiguration.cleanUp();
+			System.out.println("finally");
+		}
+		return null;
+
+//		if (!hostId.isBlank()) {
+//			Host obj = hostRepository.findByHostIdAndIsActiveTrue(hostId);
+//
+//			if (obj != null) {
+//				return obj;
+//			} else
+//				throw new NotFoundException("data of given id is not available in the database");
+//
+//		} else
+//			throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
 	}
 
 	@Override
 	public List<Host> showAll() {
+		MongoCursor<Document> cursor = null;
+		try {
+			
+			mongoDbConfiguration.mongoClient();
+
 		List<Host> list = hostRepository.findAllByIsActiveTrue();
 		if (!list.isEmpty()) {
 			return list;
 		} else {
 			throw new NotFoundException("entered id is null or not valid ,please enter correct id");
 		}
+		}finally {
+				 if (cursor != null) {
+				  cursor.close();
+		}
 	}
+	}    
 
 	@Override
 	public List<Host> showByHostFirstName(String hostFirstName) {
@@ -150,9 +223,9 @@ public class HostServiceImpl implements HostServiceInterface {
 	}
 
 	@Override
-	public List<Host> showByHostVehicleRegNo(String hostVehicleRegNo) {
-		if (!hostVehicleRegNo.isBlank()) {
-			List<Host> list = hostRepository.findByHostVehicleRegNoAndIsActiveTrue(hostVehicleRegNo);
+	public List<Host> showByHostVehicleRegistrationNo(String hostVehicleRegistrationNo) {
+		if (!hostVehicleRegistrationNo.isBlank()) {
+			List<Host> list = hostRepository.findByHostVehicleRegistrationNoAndIsActiveTrue(hostVehicleRegistrationNo);
 			if (!list.isEmpty()) {
 				return list;
 			} else {
@@ -267,8 +340,8 @@ public class HostServiceImpl implements HostServiceInterface {
 				if (host.getHostAddress() != null && hostdto.getHostAddress().isBlank())
 					obj.setHostAddress(hostdto.getHostAddress());
 
-				if (host.getHostVehicleRegNo() != null && hostdto.getHostVehicleRegNo().isBlank())
-					obj.setHostVehicleRegNo(hostdto.getHostVehicleRegNo());
+				if (host.getHostVehicleRegistrationNo() != null && hostdto.getHostVehicleRegistrationNo().isBlank())
+					obj.setHostVehicleRegistrationNo(hostdto.getHostVehicleRegistrationNo());
 
 				if (host.getHostVehicleChargerType() != null && hostdto.getHostVehicleChargerType().isBlank())
 					obj.setHostVehicleChargerType(hostdto.getHostVehicleChargerType());
@@ -309,10 +382,10 @@ public class HostServiceImpl implements HostServiceInterface {
 
 				Settlement settlement = settlementConverter.dtoToEntity(settlementDto);
 
-				settlement.setSettlementId(hostSequenceGeneratorService.getGenratedId());
+				settlement.setSettlementId(hostSequenceGeneratorService.getGeneratedId());
 				settlement.setSettlementUTR(UUID.randomUUID().toString());
-				settlement.setCreatedDate(dateFormat.format(date));
-				settlement.setModifiedDate(dateFormat.format(date));
+				settlement.setCreatedDate(dateSetter());
+				settlement.setModifiedDate(dateSetter());
 				settlement.setActive(true);
 				obj.getSettlements().add(settlement);
 				hostRepository.save(obj);
@@ -337,7 +410,10 @@ public class HostServiceImpl implements HostServiceInterface {
 				Wallet wallet = walletConverter.dtoToEntity(walletDto);
 				Wallet wallet2 = host.getWallets();
 
+				String walletIdFormat = "WLT" + idGenerator();
+
 				wallet.setWalletId(wallet2.getWalletId());
+				wallet.setWalletId(walletIdFormat);
 				wallet.setActive(true);
 				host.setWallets(wallet);
 				hostRepository.save(host);
@@ -360,7 +436,6 @@ public class HostServiceImpl implements HostServiceInterface {
 		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria),
 				Aggregation.unwind("settlements"), Aggregation.match(matchCriteria2), groupOperation,
 				Aggregation.project("_id", "settlements"));
-		
 
 		Host host = mongoTemplate.aggregate(aggregation, "host", Host.class).getUniqueMappedResult();
 		List<Settlement> settlements = host.getSettlements();
@@ -378,10 +453,11 @@ public class HostServiceImpl implements HostServiceInterface {
 
 	@Override
 	public Host getHostDetailsById(String hostId) {
-	Host host=hostRepository.findByHostId(hostId);
+		Host host = hostRepository.findByHostId(hostId);
 		return host;
 	}
-
-
+	
+	
+	
 
 }

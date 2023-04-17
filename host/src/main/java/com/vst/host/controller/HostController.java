@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +35,6 @@ public class HostController {
 	@Autowired
 	HostServiceImpl hostServiceImpl;
 
-	@Autowired
-	ObjectMapper objectMapper;
-
 	@PostMapping("/addHost")
 	public ResponseEntity<String> addHost(@Valid @RequestBody HostDto hostDto) {
 		hostServiceImpl.add(hostDto);
@@ -55,7 +54,7 @@ public class HostController {
 	}
 
 	@GetMapping("/getHostFirstName")
-	public ResponseEntity<List<Host>> getByHosFirstName(@RequestParam("hostFirstName") String hostFirstName) {
+	public ResponseEntity<List<Host>> getByHostFirstName(@RequestParam("hostFirstName") String hostFirstName) {
 		return ResponseEntity.ok(hostServiceImpl.showByHostFirstName(hostFirstName));
 	}
 
@@ -70,9 +69,9 @@ public class HostController {
 
 	}
 
-	@GetMapping("/getHostVehicleRegNo")
-	public ResponseEntity<List<Host>> getByHostVehicleRegNo(@RequestParam("hostVehicleRegNo") String hostVehicleRegNo) {
-		return ResponseEntity.ok(hostServiceImpl.showByHostVehicleRegNo(hostVehicleRegNo));
+	@GetMapping("/getHostVehicleRegistrationNo")
+	public ResponseEntity<List<Host>> getByHostVehicleRegistrationNo(@RequestParam("hostVehicleRegNo") String hostVehicleRegNo) {
+		return ResponseEntity.ok(hostServiceImpl.showByHostVehicleRegistrationNo(hostVehicleRegNo));
 	}
 
 	@GetMapping("/getHostVehicleChargerType")
@@ -103,7 +102,7 @@ public class HostController {
 		return ResponseEntity.ok(hostServiceImpl.showByFullName(hostFirstName, hostMiddleName, hostLastName));
 	}
 
-	/* creating a delete mapping that deletes a specified user */
+	/* Creating a delete mapping that deletes a specified user */
 
 	@DeleteMapping("/deleteHost")
 	public ResponseEntity<String> deleteUser(@RequestParam("hostId") String hostId) {
@@ -112,7 +111,7 @@ public class HostController {
 
 	}
 
-	/* creating a delete mapping that deletes a specified user */
+	/* Creating a delete mapping that deletes a specified user */
 
 	@PutMapping("/updateHost")
 	public ResponseEntity<String> updateHost(@RequestParam("hostId") String hostId, @RequestBody HostDto hostDto) {
@@ -137,7 +136,7 @@ public class HostController {
 	}
 
 	@GetMapping("/getSettlement")
-	public ResponseEntity<List<Settlement>> getBysettSettlementDate(@RequestParam("hostId") String hostId,
+	public ResponseEntity<List<Settlement>> getBySettlementDate(@RequestParam("hostId") String hostId,
 			@RequestParam("getSettlementByDate") String settlementDate) {
 
 		return ResponseEntity.ok(hostServiceImpl.getByHostIdAndSettlementDate(hostId, settlementDate));

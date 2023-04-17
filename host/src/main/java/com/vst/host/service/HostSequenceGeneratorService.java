@@ -29,10 +29,10 @@ public class HostSequenceGeneratorService {
 		HostDbSequence counter = mongoOperations.findAndModify(query, update, options().returnNew(true).upsert(true),
 				HostDbSequence.class); // modify in document
 
-		return !Objects.isNull(counter) ? counter.getSeq() : 1;
+		return !Objects.isNull(counter) ? counter.getSequence() : 1;
 	}
 	
-	public String getGenratedId() {
+	public String getGeneratedId() {
 		String number = "";
 		Date dNow = new Date();
 		SimpleDateFormat ft = new SimpleDateFormat("ddMMyyyy_hhmmss");

@@ -10,7 +10,7 @@ import org.springframework.data.domain.Sort;
 
 
 @Component
-public class HostConfig {
+public class HostConfiguration {
 
 	@Autowired
 	MongoTemplate mongoTemplate;

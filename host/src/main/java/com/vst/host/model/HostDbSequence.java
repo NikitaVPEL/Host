@@ -17,6 +17,6 @@ public class HostDbSequence {
 
 	@Id
 	private String id;
-	private int seq;
+	private int sequence;
 
 }

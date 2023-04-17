@@ -1,7 +1,7 @@
 package com.vst.host.converter;
 
 import java.util.ArrayList;
- import java.util.List;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +29,20 @@ public class HostConverter {
 		BeanUtils.copyProperties(hostDto, host);
 
 		WalletDto walletDto = hostDto.getWallets();
-		
-		if(walletDto!=null) {
-		Wallet wallet = walletConverter.dtoToEntity(walletDto);
-		host.setWallets(wallet);
-		}
-		
-		List<SettlementDto> settlementList = hostDto.getSettlements();
-		if(settlementList!=null) {
-		List<Settlement> settlements = new ArrayList<>();
 
-		for (SettlementDto settlementDto : settlementList) {
-			settlements.add(settlementConverter.dtoToEntity(settlementDto));
+		if (walletDto != null) {
+			Wallet wallet = walletConverter.dtoToEntity(walletDto);
+			host.setWallets(wallet);
 		}
-		host.setSettlements(settlements);
+
+		List<SettlementDto> settlementList = hostDto.getSettlements();
+		if (settlementList != null) {
+			List<Settlement> settlements = new ArrayList<>();
+
+			for (SettlementDto settlementDto : settlementList) {
+				settlements.add(settlementConverter.dtoToEntity(settlementDto));
+			}
+			host.setSettlements(settlements);
 		}
 		return host;
 	}

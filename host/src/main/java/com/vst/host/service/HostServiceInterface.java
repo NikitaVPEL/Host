@@ -11,7 +11,7 @@ import com.vst.host.model.Wallet;
 
 public interface HostServiceInterface {
 
-	public String add(HostDto hostdto);
+	public void add(HostDto hostdto);
 
 	public Host show(String hostId);
 
@@ -23,7 +23,7 @@ public interface HostServiceInterface {
 
 	public List<Host> showByHostEmail(String hostEmail);
 
-	public List<Host> showByHostVehicleRegNo(String hostVehicleRegNo);
+	public List<Host> showByHostVehicleRegistrationNo(String hostVehicleRegistrationNo);
 
 	public List<Host> showByHostVehicleChargerType(String hostVehicleChargerType);
 
