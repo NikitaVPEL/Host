@@ -43,7 +43,7 @@ public interface HostServiceInterface {
 
 	public String addSettlement(String hostId, SettlementDto settlementDto);
 
-	public String addWallet(String hostId, WalletDto walletDto);
+	public void addWallet(String hostId, WalletDto walletDto);
 
 	public List<Settlement> getByHostIdAndSettlementDate(String hostId, String settlementDate);
 

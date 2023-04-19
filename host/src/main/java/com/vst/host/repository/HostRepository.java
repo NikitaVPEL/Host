@@ -8,8 +8,6 @@ import org.springframework.data.mongodb.repository.Query;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vst.host.model.Host;
-import com.vst.host.model.Settlement;
-import com.vst.host.model.Wallet;
 
 public interface HostRepository extends MongoRepository<Host, String> {
 
