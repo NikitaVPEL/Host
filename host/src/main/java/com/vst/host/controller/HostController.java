@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.mongodb.client.FindIterable;
 import com.vst.host.dto.HostDto;
 import com.vst.host.dto.SettlementDto;
 import com.vst.host.dto.WalletDto;
@@ -31,6 +31,8 @@ public class HostController {
 
 	@Autowired
 	HostServiceImpl hostServiceImpl;
+	
+	
 
 	@PostMapping("/addHost")
 	public ResponseEntity<String> addHost(@Valid @RequestBody HostDto hostDto) {
@@ -132,18 +134,18 @@ public class HostController {
 		return new ResponseEntity<>("wallet added successfully", HttpStatus.OK);
 	}
 
-	@GetMapping("/getSettlement")
-	public ResponseEntity<List<Settlement>> getBySettlementDate(@RequestParam("hostId") String hostId,
-			@RequestParam("getSettlementByDate") String settlementDate) {
+//	@GetMapping("/getSettlement1")
+//	public ResponseEntity<List<Settlement>> getBySettlementDate(@RequestParam("hostId") String hostId,
+//			@RequestParam("getSettlementByDate") String settlementDate) {
+//
+//		return ResponseEntity.ok(hostServiceImpl.getByHostIdAndSettlementDate(hostId, settlementDate));
+//	}
 
-		return ResponseEntity.ok(hostServiceImpl.getByHostIdAndSettlementDate(hostId, settlementDate));
-	}
-
-	@GetMapping("/getBySettlement1")
+	@GetMapping("/getBySettlement")
 	public List<Settlement> printSettlementsByDate1(@RequestParam("hostId") String hostId,
 			@RequestParam("getSettlementByDate") String settlementDate) {
 
-		List<Settlement> settlements = hostServiceImpl.getByHostIdAndSettlementsDate1(hostId, settlementDate);
+		List<Settlement> settlements = hostServiceImpl.getByHostIdAndSettlementsDate(hostId, settlementDate);
 		return settlements;
 	}
 	

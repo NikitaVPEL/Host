@@ -2,6 +2,7 @@ package com.vst.host.service;
 
 import java.util.List;
 
+import com.mongodb.client.FindIterable;
 import com.vst.host.dto.HostDto;
 import com.vst.host.dto.SettlementDto;
 import com.vst.host.dto.WalletDto;
@@ -45,9 +46,10 @@ public interface HostServiceInterface {
 
 	public void addWallet(String hostId, WalletDto walletDto);
 
-	public List<Settlement> getByHostIdAndSettlementDate(String hostId, String settlementDate);
+//	public List<Settlement> getByHostIdAndSettlementDate(String hostId, String settlementDate);
 
-	public List<Settlement> getByHostIdAndSettlementsDate1(String hostId, String settlementDate);
+	public List<Settlement> getByHostIdAndSettlementsDate(String hostId, String settlementDate);
 
 	public Host getHostDetailsById(String hostId);
+	
 }

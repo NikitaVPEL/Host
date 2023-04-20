@@ -1,17 +1,19 @@
 package com.vst.host.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -19,6 +21,14 @@ import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.vst.host.converter.HostConverter;
 import com.vst.host.converter.SettlementConverter;
 import com.vst.host.converter.WalletConverter;
@@ -26,6 +36,7 @@ import com.vst.host.dto.HostDto;
 import com.vst.host.dto.SettlementDto;
 import com.vst.host.dto.WalletDto;
 import com.vst.host.exception.HostException;
+import com.vst.host.exception.MethodFailureException;
 import com.vst.host.exception.NotAcceptableException;
 import com.vst.host.exception.NotFoundException;
 import com.vst.host.model.Host;
@@ -33,7 +44,6 @@ import com.vst.host.model.Settlement;
 import com.vst.host.model.Wallet;
 import com.vst.host.repository.HostRepository;
 import com.vst.host.utils.IdAndDateGenerator;
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Service
@@ -57,12 +67,10 @@ public class HostServiceImpl implements HostServiceInterface {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
+	IdAndDateGenerator idAndDateGenerator;
+
 	@Autowired
 	public HikariDataSource dataSource;
-
-	private ThreadPoolExecutor threadPool;
-
-	IdAndDateGenerator idAndDateGenerator = new IdAndDateGenerator();
 
 	public void openConnection() {
 		try{
@@ -93,8 +101,6 @@ public class HostServiceImpl implements HostServiceInterface {
 	public void add(@Valid HostDto hostDto) {
 
 		try {
-			openConnection();
-
 			Host host = hostConverter.dtoToEntity(hostDto);
 			host.setHostId("HST" + idAndDateGenerator.idGenerator());
 			host.setCreatedDate(idAndDateGenerator.dateSetter());
@@ -115,9 +121,9 @@ public class HostServiceImpl implements HostServiceInterface {
 			exception.setFunctionality("add the host");
 			exception.setMessage(null);
 			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
 
 		} finally {
-			closeDataSource();
 		}
 	}
 
@@ -126,10 +132,9 @@ public class HostServiceImpl implements HostServiceInterface {
 	public Host show(String hostId) {
 		try {
 			if (!hostId.isBlank()) {
-				openConnection();
-
 				Host obj = hostRepository.findByHostIdAndIsActiveTrue(hostId);
 				if (obj != null) {
+					int a = 1/0;
 					return obj;
 				} else {
 					throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
@@ -137,8 +142,9 @@ public class HostServiceImpl implements HostServiceInterface {
 			} else {
 				throw new NotFoundException("data of given id is not available in the database");
 			}
-		} catch (HostException exception) {
+		} catch (Exception e) {
 
+			HostException exception = new HostException();
 			exception.setErrorCode("404");
 			exception.setStatusCode(null);
 			exception.setStatus(null);
@@ -147,18 +153,15 @@ public class HostServiceImpl implements HostServiceInterface {
 			exception.setFunctionality("add the host");
 			exception.setMessage(null);
 			logger.info(exception);
+			throw new MethodFailureException("its a not found exception");
 		} finally {
-			closeDataSource();
 		}
-		throw new NotFoundException("something went wrong..");
 	}
 
 	@Transactional
 	@Override
 	public List<Host> showAll() {
 		try {
-			openConnection();
-
 			List<Host> list = hostRepository.findAllByIsActiveTrue();
 			if (!list.isEmpty()) {
 				return list;
@@ -175,18 +178,15 @@ public class HostServiceImpl implements HostServiceInterface {
 			exception.setFunctionality("add the host");
 			exception.setMessage(null);
 			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
 		} finally {
-			closeDataSource();
 		}
-		throw new NotFoundException("Something went wrong..");
 	}
 
 	@Transactional
 	@Override
 	public List<Host> showByHostFirstName(String hostFirstName) {
 		try {
-			openConnection();
-
 			if (!hostFirstName.isBlank()) {
 				List<Host> list = hostRepository.findByHostFirstNameAndIsActiveTrue(hostFirstName);
 				if (!list.isEmpty()) {
@@ -206,14 +206,14 @@ public class HostServiceImpl implements HostServiceInterface {
 			exception.setFunctionality("add the host");
 			exception.setMessage(null);
 			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
 		} finally {
-			closeDataSource();
 		}
-		throw new NotFoundException("Something went wrong..");
 	}
 
 	@Override
 	public List<Host> showByHostLastName(String hostLastName) {
+		try {
 		if (!hostLastName.isBlank()) {
 			List<Host> list = hostRepository.findByHostLastNameAndIsActiveTrue(hostLastName);
 			if (!list.isEmpty()) {
@@ -223,10 +223,24 @@ public class HostServiceImpl implements HostServiceInterface {
 			}
 		} else
 			throw new NotAcceptableException("data of given id is not available in the database");
+		}catch (HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 	}
 
 	@Override
 	public List<Host> showByHostEmail(String hostEmail) {
+		try {
 		if (!hostEmail.isBlank()) {
 			List<Host> list = hostRepository.findByHostEmailAndIsActiveTrue(hostEmail);
 			if (!list.isEmpty()) {
@@ -236,10 +250,24 @@ public class HostServiceImpl implements HostServiceInterface {
 			}
 		} else
 			throw new NotAcceptableException("data of given id is not available in the database");
+		}catch(HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 	}
 
 	@Override
 	public List<Host> showByHostVehicleRegistrationNo(String hostVehicleRegistrationNo) {
+		try {
 		if (!hostVehicleRegistrationNo.isBlank()) {
 			List<Host> list = hostRepository.findByHostVehicleRegistrationNoAndIsActiveTrue(hostVehicleRegistrationNo);
 			if (!list.isEmpty()) {
@@ -249,12 +277,25 @@ public class HostServiceImpl implements HostServiceInterface {
 			}
 		} else
 			throw new NotAcceptableException("data of given id is not available in the database");
+		}catch(HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 	}
 
 	@Override
 	public List<Host> showByHostVehicleChargerType(String hostVehicleChargerType) {
+		try {
 		if (!hostVehicleChargerType.isBlank()) {
-
 			List<Host> list = hostRepository.findByHostVehicleChargerTypeAndIsActiveTrue(hostVehicleChargerType);
 			if (!list.isEmpty()) {
 				return list;
@@ -263,10 +304,24 @@ public class HostServiceImpl implements HostServiceInterface {
 			}
 		} else
 			throw new NotAcceptableException("data of given id is not available in the database");
+		}catch(HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 	}
 
 	@Override
 	public List<Host> showByHostCreatedBy(String createdBy) {
+		try {
 		if (!createdBy.isBlank()) {
 			List<Host> list = hostRepository.findByCreatedByAndIsActiveTrue(createdBy);
 			if (!list.isEmpty()) {
@@ -276,10 +331,24 @@ public class HostServiceImpl implements HostServiceInterface {
 			}
 		} else
 			throw new NotAcceptableException("data of given id is not available in the database");
+		}catch(HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 	}
 
 	@Override
 	public List<Host> showByHostCity(String hostCity) {
+		try {
 		if (!hostCity.isBlank()) {
 			List<Host> list = hostRepository.findByHostCityAndIsActiveTrue(hostCity);
 			if (!list.isEmpty()) {
@@ -289,10 +358,24 @@ public class HostServiceImpl implements HostServiceInterface {
 			}
 		} else
 			throw new NotAcceptableException("data of given id is not available in the database");
+		}catch(HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 	}
 
 	@Override
 	public List<Host> showByHostModifiedBy(String modifiedBy) {
+		try {
 		if (!modifiedBy.isBlank()) {
 			List<Host> list = hostRepository.findByModifiedByAndIsActiveTrue(modifiedBy);
 			if (!list.isEmpty()) {
@@ -302,11 +385,24 @@ public class HostServiceImpl implements HostServiceInterface {
 			}
 		} else
 			throw new NotAcceptableException("data of given id is not available in the database");
+		}catch(HostException exception) {
 
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 	}
 
 	@Override
 	public List<Host> showByFullName(String hostFirstName, String hostMiddleName, String hostLastName) {
+		try {
 		String fullName = hostFirstName;
 		if (hostMiddleName != null && !hostMiddleName.isEmpty()) {
 			fullName += " " + hostMiddleName;
@@ -314,10 +410,24 @@ public class HostServiceImpl implements HostServiceInterface {
 		fullName += " " + hostLastName;
 		return hostRepository.findByHostFirstNameAndHostMiddleNameAndHostLastNameAndIsActiveTrue(hostFirstName,
 				hostMiddleName, hostLastName);
+		}catch(HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 	}
 
 	@Override
 	public void remove(String hostId) {
+		try {
 		if (!hostId.isBlank()) {
 			Host host = hostRepository.findByHostIdAndIsActiveTrue(hostId);
 			if (host != null) {
@@ -328,10 +438,24 @@ public class HostServiceImpl implements HostServiceInterface {
 			}
 		} else
 			throw new NotAcceptableException("data of given id is not available in the database");
+		}catch(HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 	}
 
 	@Override
 	public HostDto edit(String hostId, HostDto hostdto) {
+		try {
 		Host host = hostConverter.dtoToEntity(hostdto);
 		if (!hostId.isBlank()) {
 
@@ -385,11 +509,25 @@ public class HostServiceImpl implements HostServiceInterface {
 		} else {
 			throw new NotAcceptableException("data of given id is not available in the database");
 		}
+		}catch(HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 
 	}
 
 	@Override
 	public String addSettlement(String hostId, SettlementDto settlementDto) {
+		try {
 
 		if (!hostId.isBlank()) {
 			Host obj = hostRepository.findByHostIdAndIsActiveTrue(hostId);
@@ -398,7 +536,7 @@ public class HostServiceImpl implements HostServiceInterface {
 
 				Settlement settlement = settlementConverter.dtoToEntity(settlementDto);
 
-				settlement.setSettlementId(hostSequenceGeneratorService.getGeneratedId());
+				settlement.setSettlementId("STL" + idAndDateGenerator.idGenerator());
 				settlement.setSettlementUTR(UUID.randomUUID().toString());
 				settlement.setCreatedDate(idAndDateGenerator.dateSetter());
 				settlement.setModifiedDate(idAndDateGenerator.dateSetter());
@@ -411,6 +549,19 @@ public class HostServiceImpl implements HostServiceInterface {
 			}
 		} else {
 			throw new NotAcceptableException("data of given id is not available in the database");
+		}
+		}catch(HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
 		}
 	}
 
@@ -441,36 +592,67 @@ public class HostServiceImpl implements HostServiceInterface {
 			} else {
 				throw new NotAcceptableException("data of given id is not available in the database");
 			}
-		} catch (Exception e) {
+		}catch(HostException exception) {
 
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
 		} finally {
-
 		}
 	}
 
+//	@Override
+//	public List<Settlement> getByHostIdAndSettlementDate(String hostId, String settlementDate) {
+//
+//		Criteria matchCriteria = Criteria.where("_id").is(hostId);
+//		Criteria matchCriteria2 = Criteria.where("settlements.settlementDate").is(settlementDate);
+//		GroupOperation groupOperation = Aggregation.group("_id").push("settlements").as("settlements");
+//
+//		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria),
+//				Aggregation.unwind("settlements"), Aggregation.match(matchCriteria2), groupOperation,
+//				Aggregation.project("_id", "settlements"));
+//
+//		Host host = mongoTemplate.aggregate(aggregation, "host", Host.class).getUniqueMappedResult();
+//		List<Settlement> settlements = host.getSettlements();
+//		System.out.println(settlements);
+//		return settlements;
+//	}
+
 	@Override
-	public List<Settlement> getByHostIdAndSettlementDate(String hostId, String settlementDate) {
-
-		Criteria matchCriteria = Criteria.where("_id").is(hostId);
-		Criteria matchCriteria2 = Criteria.where("settlements.settlementDate").is(settlementDate);
-		GroupOperation groupOperation = Aggregation.group("_id").push("settlements").as("settlements");
-
-		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria),
-				Aggregation.unwind("settlements"), Aggregation.match(matchCriteria2), groupOperation,
-				Aggregation.project("_id", "settlements"));
-
-		Host host = mongoTemplate.aggregate(aggregation, "host", Host.class).getUniqueMappedResult();
-		List<Settlement> settlements = host.getSettlements();
-		System.out.println(settlements);
-		return settlements;
-	}
-
-	@Override
-	public List<Settlement> getByHostIdAndSettlementsDate1(String hostId, String settlementDate) {
-
-		Host host = hostRepository.findBySettlementMatching(hostId, settlementDate);
+	public List<Settlement> getByHostIdAndSettlementsDate(String hostId, String settlementDate) {
+		
+		try {
+		if(!hostId.isBlank() && hostId!=null) {
+			Host host = hostRepository.findBySettlementMatching(hostId, settlementDate);
+			
+			if (host!=null) {
 		List<Settlement> settlements = host.getSettlements();
 		return settlements;
+			}else {
+				throw new NotFoundException("entered id is null or not valid ,please enter correct id");
+			}
+		}else {
+			throw new NotAcceptableException("data of given id is not available in the database");
+		}
+		}catch(HostException exception) {
+
+			exception.setErrorCode("404");
+			exception.setStatusCode(null);
+			exception.setStatus(null);
+			exception.setMethodName("HOST servive: add method");
+			exception.setLineNumber("Line No 86");
+			exception.setFunctionality("add the host");
+			exception.setMessage(null);
+			logger.info(exception);
+			throw new MethodFailureException("something went wrong");
+		} finally {
+		}
 	}
 
 	@Override
@@ -478,5 +660,9 @@ public class HostServiceImpl implements HostServiceInterface {
 		Host host = hostRepository.findByHostId(hostId);
 		return host;
 	}
+
+	
+	
+	
 
 }
