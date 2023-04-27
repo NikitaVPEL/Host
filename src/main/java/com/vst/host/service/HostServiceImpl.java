@@ -265,7 +265,7 @@ public class HostServiceImpl implements HostServiceInterface {
 			if (!hostId.isBlank()) {
 				Host obj = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
 				if (obj != null) {
-					
+					int a = 1/0;
 					logger.info("HostServiceImpl :: showHost : execution ended");
 					return obj;
 				} else {
@@ -321,7 +321,7 @@ public class HostServiceImpl implements HostServiceInterface {
 			exception.setFunctionality("add the host");
 			exception.setMessage(null);
 			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
+			throw new HostException("something went wrong" , exception);
 		} finally {
 		}
 	}

@@ -8,15 +8,20 @@ package com.vst.host.error;
 */
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.vst.host.exception.HostException;
 import com.vst.host.exception.MethodFailureException;
 import com.vst.host.exception.NotAcceptableException;
 import com.vst.host.exception.NotFoundException;
@@ -24,7 +29,7 @@ import com.vst.host.exception.NotFoundException;
 /**
  * 
  * @param exception
- * @return error message 
+ * @return error message
  */
 
 @RestControllerAdvice
@@ -63,6 +68,7 @@ public class HostApiError {
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public Map<String, String> handleInvalidArgument(MethodArgumentNotValidException exception) {
 		Map<String, String> errorMap = new HashMap<>();
@@ -86,6 +92,19 @@ public class HostApiError {
 
 		errorMap.put(message, error);
 		return errorMap;
+	}
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(HostException.class)
+	public <T> ApiResponce<?> hostException(HostException exception) {
+
+		ApiResponce<T> serviceResponse = new ApiResponce<T>();
+
+		serviceResponse.setStatus("FAILED");
+		serviceResponse.setErrors(Collections.singletonList(new ErrorResponce(exception.getErrorCode(),
+				exception.getFunctionality(), exception.getLineNumber(), exception.getMessage(),
+				exception.getMethodName(), exception.getStatus(), exception.getStatusCode())));
+		return serviceResponse;
 	}
 
 }
