@@ -20,7 +20,9 @@ public class Utility {
 	 * @return input but remove all characters except letters and digits
 	 */
 	public String sanitize(String input) {
+		System.out.println("23 sanitize");
 		String sanitizeInput = input.replaceAll("[^a-zA-Z0-9]", ""); // remove all characters except letters and digits}
+		System.out.println("25 sanitize");
 		return sanitizeInput;
 	}
 

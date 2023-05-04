@@ -263,9 +263,10 @@ public class HostServiceImpl implements HostServiceInterface {
 		logger.info("HostServiceImpl :: ShowHost : execution Started");
 		try {
 			if (!hostId.isBlank()) {
-				Host obj = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
+				System.out.println("266");
+				Host obj = hostRepository.findByHostIdAndIsActiveTrue(hostId);
+				System.out.println("obj" + obj);
 				if (obj != null) {
-					int a = 1/0;
 					logger.info("HostServiceImpl :: showHost : execution ended");
 					return obj;
 				} else {
