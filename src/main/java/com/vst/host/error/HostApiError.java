@@ -43,7 +43,7 @@ public class HostApiError {
 		Map<String, Object> errorMap = new HashMap<>();
 		HostApiResponse error = new HostApiResponse();
 		error.setCode("404");
-		error.setMessage("Data not found");
+		error.setMessage(exception.getMessage());
 		error.setDescription("Details is not available  ");
 		error.setTimeStamp(LocalDateTime.now());
 		error.setError(HttpStatus.NOT_FOUND);
@@ -106,5 +106,22 @@ public class HostApiError {
 				exception.getMethodName(), exception.getStatus(), exception.getStatusCode())));
 		return serviceResponse;
 	}
+	
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ExceptionHandler(NotFoundException.class)
+	public Map<String, Object> hostExceptionError(HostException exception) {
+		Map<String, Object> errorMap = new HashMap<>();
+		HostApiResponse error = new HostApiResponse();
+		error.setCode("404");
+		error.setMessage(exception.getMessage());
+		error.setDescription("Details is not available  ");
+		error.setTimeStamp(LocalDateTime.now());
+		error.setError(HttpStatus.NOT_FOUND);
+		error.setReason("Data not available ");
+		error.setLineNumber(exception.getLineNumber());
+		errorMap.put(message, error);
+		return errorMap;
+	}
+
 
 }

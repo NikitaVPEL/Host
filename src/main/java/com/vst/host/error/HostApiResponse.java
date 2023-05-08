@@ -26,5 +26,6 @@ public class HostApiResponse {
 	String message;
 	String description;
 	String reason;
+	String lineNumber;
 	
 }
