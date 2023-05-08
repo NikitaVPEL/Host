@@ -43,7 +43,7 @@ public class HostApiError {
 		Map<String, Object> errorMap = new HashMap<>();
 		HostApiResponse error = new HostApiResponse();
 		error.setCode("404");
-		error.setMessage(exception.getMessage());
+		error.setMessage("Data not found");
 		error.setDescription("Details is not available  ");
 		error.setTimeStamp(LocalDateTime.now());
 		error.setError(HttpStatus.NOT_FOUND);
