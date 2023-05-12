@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.vst.host.exception.HostException;
+import com.vst.host.exception.InValidDataException;
+import com.vst.host.exception.InValidIdExcepetion;
 import com.vst.host.exception.MethodFailureException;
 import com.vst.host.exception.NotAcceptableException;
 import com.vst.host.exception.NotFoundException;
@@ -39,36 +41,33 @@ public class HostApiError {
 
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@ExceptionHandler(NotFoundException.class)
-	public Map<String, Object> notFound(NotFoundException exception) {
+	public Map<String, Object> notFound(NotFoundException ex) {
 		Map<String, Object> errorMap = new HashMap<>();
-		HostApiResponse error = new HostApiResponse();
-		error.setCode("404");
-		error.setMessage("Data not found");
-		error.setDescription("Details is not available  ");
-		error.setTimeStamp(LocalDateTime.now());
-		error.setError(HttpStatus.NOT_FOUND);
-		error.setReason("Data not available ");
-		errorMap.put(message, error);
+		HostApiResponse response = new HostApiResponse();
+		response.setMessage(ex.getMessage());
+		response.setStatus(HttpStatus.NOT_FOUND);
+		response.setStatusCode("404");
+		response.setTimeStamp(LocalDateTime.now());
+		errorMap.put(message, response);
 		return errorMap;
 	}
 
 	@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
 	@ExceptionHandler(NotAcceptableException.class)
-	public Map<String, Object> notFound(NotAcceptableException exception) {
+	public Map<String, Object> notFound(NotAcceptableException ex) {
 		Map<String, Object> errorMap = new HashMap<>();
-		HostApiResponse error = new HostApiResponse();
-		error.setCode("400");
-		error.setMessage("Please Enter Valid Data");
-		error.setDescription("NOT ACCEPTABLE ");
-		error.setTimeStamp(LocalDateTime.now());
-		error.setError(HttpStatus.NOT_ACCEPTABLE);
-		error.setReason("Provide Valid data ");
-		errorMap.put(message, error);
+		HostApiResponse response = new HostApiResponse();
+
+		response.setMessage(ex.getMessage());
+		response.setStatus(HttpStatus.NOT_ACCEPTABLE);
+		response.setStatusCode("406");
+		response.setTimeStamp(LocalDateTime.now());
+		errorMap.put(message, response);
 		return errorMap;
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	 
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public Map<String, String> handleInvalidArgument(MethodArgumentNotValidException exception) {
 		Map<String, String> errorMap = new HashMap<>();
@@ -78,34 +77,64 @@ public class HostApiError {
 		return errorMap;
 	}
 
-	@ResponseStatus(HttpStatus.METHOD_FAILURE)
 	@ExceptionHandler(MethodFailureException.class)
-	public Map<String, Object> methodFailure(MethodFailureException exception) {
+	@ResponseStatus(HttpStatus.METHOD_FAILURE)
+	public Map<String, Object> methodFailure(MethodFailureException ex) {
 		Map<String, Object> errorMap = new HashMap<>();
-		HostApiResponse error = new HostApiResponse();
-		error.setCode("420");
-		error.setMessage("Something Went Wrong");
-		error.setDescription("Not Allowed ");
-		error.setTimeStamp(LocalDateTime.now());
-		error.setError(HttpStatus.METHOD_FAILURE);
-		error.setReason("There is a problem");
+		HostApiResponse response = new HostApiResponse();
+		response.setMessage(ex.getMessage());
+		response.setStatus(HttpStatus.METHOD_FAILURE);
+		response.setStatusCode("420");
+		response.setTimeStamp(LocalDateTime.now());
 
-		errorMap.put(message, error);
+		errorMap.put(message, response);
 		return errorMap;
 	}
 
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(HostException.class)
-	public <T> ApiResponce<?> hostException(HostException exception) {
-
-		ApiResponce<T> serviceResponse = new ApiResponce<T>();
-
-		serviceResponse.setStatus("FAILED");
-		serviceResponse.setErrors(Collections.singletonList(new ErrorResponce(exception.getErrorCode(),
-				exception.getFunctionality(), exception.getLineNumber(), exception.getMessage(),
-				exception.getMethodName(), exception.getStatus(), exception.getStatusCode())));
-		return serviceResponse;
+	@ExceptionHandler(InValidDataException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public Map<String, Object> inValidData(InValidDataException ex) {
+		Map<String, Object> errorMap = new HashMap<>();
+		HostApiResponse response = new HostApiResponse();
+		response.setMessage(ex.getMessage());
+		response.setStatus(HttpStatus.NOT_FOUND);
+		response.setStatusCode("404");
+		response.setTimeStamp(LocalDateTime.now());
+		errorMap.put(message, response);
+		return errorMap;
 	}
+	
+	@ExceptionHandler(InValidIdExcepetion.class)
+	@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+	public Map<String, Object> inValidId(InValidIdExcepetion ex) {
+		Map<String, Object> errorMap = new HashMap<>();
+		HostApiResponse response = new HostApiResponse();
+		response.setMessage(ex.getMessage());
+		response.setStatus(HttpStatus.NOT_ACCEPTABLE);
+		response.setStatusCode("406");
+		response.setTimeStamp(LocalDateTime.now());
+		errorMap.put(message, response);
+		return errorMap;
+	}
+	
+	@ExceptionHandler(HostException.class)
+	@ResponseStatus(HttpStatus.BAD_GATEWAY)
+	public Map<String, Object> stationException(HostException ex) {
+		Map<String, Object> errorMap = new HashMap<>();
+		HostApiResponse response = new HostApiResponse();
+		
+		response.setStatus(HttpStatus.BAD_GATEWAY);
+		response.setStatusCode("502");
+		response.setServiceName(ex.getServiceName());
+		response.setFunctionality(ex.getFunctionality());
+		response.setLineNumber(ex.getLineNumber());
+		response.setMessage(ex.getMessage());
+		response.setMethodName(ex.getMethodName());
+		response.setServiceCode(ex.getServiceCode());
+		response.setClassName(ex.getClassName());
+		response.setTimeStamp(LocalDateTime.now());
 
-
+		errorMap.put(message, response);
+		return errorMap;
+	}
 }

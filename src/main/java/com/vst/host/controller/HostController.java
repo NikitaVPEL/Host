@@ -142,52 +142,6 @@ public class HostController {
 	}
 
 	/**
-	 * Usage: Get the host object/ details by created date
-	 * 
-	 * HTTP method : GET and URL : manageHost/getCreatedBy
-	 * 
-	 * @param createdBy
-	 * @return Http responce and list of host object with similar created date
-	 */
-	@GetMapping("/getCreatedBy")
-	public ResponseEntity<List<Host>> getByCreatedBy(@RequestParam("createdBy") String createdBy) {
-
-		log.info("HostController :: getByCreatedBy : Request Param {createdBy} ");
-		return ResponseEntity.ok(hostServiceImpl.showByHostCreatedBy(createdBy));
-	}
-
-	/**
-	 * Usage: Get the host object/ details by modified date
-	 * 
-	 * HTTP method : GET and URL : manageHost/getModifiedBy
-	 * 
-	 * @param modifiedBy
-	 * @return Http responce and list of host object with similar modified date
-	 */
-	@GetMapping("/getModifiedBy")
-	public ResponseEntity<List<Host>> getByModifiedBy(@RequestParam("modifiedBy") String modifiedBy) {
-
-		log.info("HostController :: getByModifiedBy : Request Param {modifiedBy} ");
-		return ResponseEntity.ok(hostServiceImpl.showByHostModifiedBy(modifiedBy));
-	}
-
-	/**
-	 * Usage: Get the host object/ details by host full name
-	 * 
-	 * HTTP method : GET and URL : manageHost/getHostFullName
-	 * 
-	 * @param hostFirstName, hostMiddleName, hostLastName
-	 * @return Http responce and list of host object with similar hostFullName
-	 */
-	@GetMapping("/getHostFullName")
-	public ResponseEntity<List<Host>> getByFullName(@RequestParam("hostFirstName") String hostFirstName,
-			@RequestParam("hostMiddleName") String hostMiddleName, @RequestParam("hostLastName") String hostLastName) {
-
-		log.info("HostController :: getByFullName : Request Param {hostFirstName}, {hostMiddleName}, {hostLastName} ");
-		return ResponseEntity.ok(hostServiceImpl.showByFullName(hostFirstName, hostMiddleName, hostLastName));
-	}
-
-	/**
 	 * Usage: delete the specific host using host Id
 	 * 
 	 * HTTP method : DELETE and URL : manageHost/deleteHost
@@ -297,6 +251,12 @@ public class HostController {
 
 		log.info("HostController :: getHostDetails : Request Param {hostId} ");
 		return ResponseEntity.ok(hostServiceImpl.getHostDetailsById(hostId));
+	}
+	
+	@GetMapping("/getSettlemetByHostId")
+	public ResponseEntity<List<Settlement>> getSettlementsbyHostId(@RequestParam("hostId") String hostId){
+		log.info("HostController :: getSettlementByHostId : Request Param {hostId} ");
+		return ResponseEntity.ok(hostServiceImpl.getSettlementByHostId(hostId));
 	}
 
 }

@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vst.host.model.Host;
+import com.vst.host.model.Settlement;
 
 public interface HostRepository extends MongoRepository<Host, String> {
 
@@ -60,6 +61,9 @@ public interface HostRepository extends MongoRepository<Host, String> {
 	@Query(value = "{'_id': ?0, 'isActive': true}", fields = "{'settlements': 0, 'wallets': 0}")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	Host findByHostId(String hostId);
+	
+	@Query(value = "{'hostId':?0, 'isActive':true }",fields = "{'settlements':1}")
+	Host findSettlementByHostId(String hostId);
 
 
 	

@@ -20,11 +20,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HostApiResponse {
 
-	LocalDateTime TimeStamp;
-	String code;
-	HttpStatus error;
-	String message;
-	String description;
-	String reason;
+	private String message;
+    private HttpStatus status;
+    private String statusCode;
+    private LocalDateTime timeStamp;
+ 
+	private String serviceName;
+	private String serviceCode;
+	private String className;
+	private String methodName;
+	private int lineNumber;
+	private String functionality;
 	
 }

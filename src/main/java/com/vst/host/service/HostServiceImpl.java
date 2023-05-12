@@ -29,8 +29,10 @@ import com.vst.host.converter.WalletConverter;
 import com.vst.host.dto.HostDto;
 import com.vst.host.dto.SettlementDto;
 import com.vst.host.dto.WalletDto;
+import com.vst.host.exception.DataBaseClosedException;
 import com.vst.host.exception.HostException;
-import com.vst.host.exception.MethodFailureException;
+import com.vst.host.exception.InValidDataException;
+import com.vst.host.exception.InValidIdExcepetion;
 import com.vst.host.exception.NotAcceptableException;
 import com.vst.host.exception.NotFoundException;
 import com.vst.host.model.Host;
@@ -40,7 +42,6 @@ import com.vst.host.repository.HostRepository;
 import com.vst.host.utils.Utility;
 import com.zaxxer.hikari.HikariDataSource;
 
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 public class HostServiceImpl implements HostServiceInterface {
@@ -106,41 +107,54 @@ public class HostServiceImpl implements HostServiceInterface {
 
 	@Transactional // To avoid rollback on listed exception
 	@Override
-	public void addNewHost(@Valid HostDto hostDto) {
+	public boolean addNewHost(@Valid HostDto hostDto) {
 		logger.info("HostServiceImpl :: addNewHost : execution Started");
 		try {
 			if (!dataSource.isClosed()) {
-				Host host = hostConverter.dtoToEntity(hostDto);
-				host.setHostId("HST" + utility.idGenerator());
-				host.setCreatedDate(utility.dateSetter());
-				host.setModifiedDate(utility.dateSetter());
-				host.setHostFirstName(utility.toTitleCase(host.getHostFirstName()));
-				host.setHostMiddleName(utility.toTitleCase(host.getHostMiddleName()));
-				host.setHostLastName(utility.toTitleCase(host.getHostLastName()));
-				host.setHostCity(utility.toTitleCase(host.getHostCity()));
-				host.setActive(true);
+				if (hostDto != null) {
 
-				host.setWallets(new Wallet());
-				host.setSettlements(new ArrayList<Settlement>());
-				hostRepository.save(host);
-				logger.info("HostServiceImpl :: addNewHost : execution ended");
-			} else {
+					Host host = hostConverter.dtoToEntity(hostDto);
+					host.setHostId("HST" + utility.idGenerator());
+					host.setCreatedDate(utility.dateSetter());
+					host.setModifiedDate(utility.dateSetter());
+					host.setHostFirstName(utility.toTitleCase(host.getHostFirstName()));
+					host.setHostMiddleName(utility.toTitleCase(host.getHostMiddleName()));
+					host.setHostLastName(utility.toTitleCase(host.getHostLastName()));
+					host.setHostCity(utility.toTitleCase(host.getHostCity()));
+					host.setActive(true);
 
-			}
+					host.setWallets(new Wallet());
+					host.setSettlements(new ArrayList<Settlement>());
+					if (hostRepository.save(host) != null) {
+						logger.info("HostServiceImpl :: addNewHost : execution ended");
+						return true;
+
+					} else
+						throw new InValidDataException("Something went wrong, Please try Again");
+
+				} else
+					throw new InValidDataException("Host Data Cannot Be Empty. Please Check and Try Again");
+
+			} else
+				throw new DataBaseClosedException("please open database");
+
+		} catch (InValidDataException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidDataException(e.getLocalizedMessage());
+
+		} catch (DataBaseClosedException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new DataBaseClosedException(e.getLocalizedMessage());
+
 		} catch (Exception e) {
-			HostException exception = new HostException();
-			e.printStackTrace();
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
 
-		} finally {
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"show the host details by Host Id", e.getLocalizedMessage());
+
+			throw new HostException("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"show the host details by Host Id", e.getLocalizedMessage());
 		}
 	}
 
@@ -159,40 +173,55 @@ public class HostServiceImpl implements HostServiceInterface {
 	public String addWallet(String hostId, WalletDto walletDto) {
 		logger.info("HostServiceImpl :: addWallet : execution started");
 		try {
-			if (!hostId.isBlank()) {
-				Host host = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
+			if (!hostId.isBlank() && hostId != null) {
+				if (walletDto != null) {
 
-				if (host != null) {
+					Host host = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
+					if (host != null) {
 
-					Wallet wallet = walletConverter.dtoToEntity(walletDto);
+						Wallet wallet = walletConverter.dtoToEntity(walletDto);
 
-					wallet.setWalletId("WLT"+ utility.idGenerator());
-					wallet.setCreatedDate(utility.dateSetter());
-					wallet.setModifiedDate(utility.dateSetter());
-					wallet.setActive(true);
-					host.setWallets(wallet);
-					hostRepository.save(host);
-					logger.info("HostServiceImpl :: addWallet : execution ended");
-					return "done";
+						wallet.setWalletId("WLT" + utility.idGenerator());
+						wallet.setCreatedDate(utility.dateSetter());
+						wallet.setModifiedDate(utility.dateSetter());
+						wallet.setActive(true);
+						host.setWallets(wallet);
+						hostRepository.save(host);
+						logger.info("HostServiceImpl :: addWallet : execution ended");
+						return "done";
+					} else {
+						throw new NotFoundException("Host not available, please check and try again");
+					}
 				} else {
-					throw new NotFoundException("data of given id is not available in the database");
+					throw new InValidDataException("Please ensure that you have provided a valid Data and try again.");
 				}
 			} else {
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
+				throw new InValidIdExcepetion("entered id is null or not valid ,please enter correct id");
 			}
-		} catch (HostException exception) {
 
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
+		} catch (InValidDataException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidDataException(e.getLocalizedMessage());
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"add / activate Host wallet", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"Add or activate Host wallet", e.getLocalizedMessage());
 		}
+
 	}
 
 	/**
@@ -211,40 +240,236 @@ public class HostServiceImpl implements HostServiceInterface {
 		logger.info("HostServiceImpl :: addSettlement : execution Started");
 		try {
 			if (!hostId.isBlank()) {
-				Host obj = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
+				if (settlementDto != null) {
 
-				if (obj != null) {
+					Host obj = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
 
-					Settlement settlement = settlementConverter.dtoToEntity(settlementDto);
+					if (obj != null) {
 
-					settlement.setSettlementId("STL" + utility.idGenerator());
-					settlement.setSettlementUTR(UUID.randomUUID().toString());
-					settlement.setCreatedDate(utility.dateSetter());
-					settlement.setModifiedDate(utility.dateSetter());
-					settlement.setActive(true);
-					obj.getSettlements().add(settlement);
-					hostRepository.save(obj);
-					logger.info("HostServiceImpl :: addSettlement : execution ended");
-					return "done";
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
-			} else {
+						Settlement settlement = settlementConverter.dtoToEntity(settlementDto);
+
+						settlement.setSettlementId("STL" + utility.idGenerator());
+						settlement.setSettlementUTR(UUID.randomUUID().toString());
+						settlement.setCreatedDate(utility.dateSetter());
+						settlement.setModifiedDate(utility.dateSetter());
+						settlement.setActive(true);
+						obj.getSettlements().add(settlement);
+						hostRepository.save(obj);
+						logger.info("HostServiceImpl :: addSettlement : execution ended");
+						return "done";
+					} else
+						throw new NotFoundException("data of given id is not available in the database");
+
+				} else
+					throw new InValidDataException("Settlement details cannot be null or invalid details");
+
+			} else
 				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-			}
-		} catch (HostException exception) {
 
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
+		} catch (InValidDataException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidDataException(e.getLocalizedMessage());
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (NotAcceptableException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotAcceptableException(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"add settlements in host using host id", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"add settlement in host using host id", e.getLocalizedMessage());
 		}
+	}
+
+	/**
+	 * Usage: delete the specific host using host Id
+	 * 
+	 * @param hostId
+	 * @return string message "host successfully deleted"
+	 * @exception : throw : {@link @HostException} if any error occure while the
+	 *              code.
+	 * @exception : throw : {@link @NotFoundException} if parameter is blank.
+	 * @exception : throW : {@link @NotAcceptableException} if object is null.
+	 */
+	@Transactional
+	@Override
+	public boolean remove(String hostId) {
+		logger.info("HostServiceImpl :: removeHost : execution started");
+
+		try {
+			if (!hostId.isBlank() && hostId != null) {
+				Host host = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
+				if (host != null) {
+					host.setActive(false);
+					if (hostRepository.save(host) != null) {
+
+						logger.info("HostServiceImpl :: removeHost : execution ended");
+						return true;
+					} else
+						throw new InValidDataException("host is not removed, please try again.");
+
+				} else
+					throw new NotFoundException("Host not avavilable, please check and try again");
+
+			} else
+				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
+
+		} catch (InValidDataException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidDataException(e.getLocalizedMessage());
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"remove host using host id", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"remove host using host id", e.getLocalizedMessage());
+		}
+	}
+
+	/**
+	 * Usage: update the host details
+	 * 
+	 * @param hostId, hostDto
+	 * @return string message "Data updated successfully"
+	 * @exception : throw : {@link @HostException} if any error occure while the
+	 *              code.
+	 * @exception : throw : {@link @NotFoundException} if parameter is blank.
+	 * @exception : throW : {@link @NotAcceptableException} if object is null.
+	 */
+	@Transactional
+	@Override
+	public HostDto edit(String hostId, HostDto hostdto) {
+		logger.info("HostServiceImpl :: editHost : execution started");
+		try {
+			if (!hostId.isBlank() && hostId != null) {
+				if (hostdto != null) {
+
+					Host host = hostConverter.dtoToEntity(hostdto);
+					Host obj = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
+					if (obj != null) {
+
+						boolean flag = false;
+
+						if (host.getHostFirstName() != null && hostdto.getHostFirstName().isBlank()) {
+							obj.setHostFirstName(hostdto.getHostFirstName());
+							flag = true;
+						}
+
+						if (host.getHostMiddleName() != null && hostdto.getHostMiddleName().isBlank()) {
+							obj.setHostMiddleName(hostdto.getHostMiddleName());
+							flag = true;
+						}
+
+						if (host.getHostLastName() != null && hostdto.getHostLastName().isBlank()) {
+							obj.setHostLastName(hostdto.getHostLastName());
+							flag = true;
+						}
+
+						if (host.getHostEmail() != null && hostdto.getHostEmail().isBlank()) {
+							obj.setHostEmail(hostdto.getHostEmail());
+							flag = true;
+						}
+
+						if (host.getHostContactNo() != null && hostdto.getHostContactNo().isBlank()) {
+							obj.setHostVehicleChargerType(hostdto.getHostContactNo());
+							flag = true;
+						}
+
+						if (host.getHostAddress() != null && hostdto.getHostAddress().isBlank()) {
+							obj.setHostAddress(hostdto.getHostAddress());
+							flag = true;
+						}
+
+						if (host.getHostVehicleRegistrationNo() != null
+								&& hostdto.getHostVehicleRegistrationNo().isBlank()) {
+							obj.setHostVehicleRegistrationNo(hostdto.getHostVehicleRegistrationNo());
+							flag = true;
+						}
+
+						if (host.getHostVehicleChargerType() != null && hostdto.getHostVehicleChargerType().isBlank()) {
+							obj.setHostVehicleChargerType(hostdto.getHostVehicleChargerType());
+							flag = true;
+						}
+
+						if (host.getHostCity() != null && hostdto.getHostCity().isBlank()) {
+							obj.setHostCity(hostdto.getHostCity());
+							flag = true;
+						}
+
+						if (hostdto.getCreatedBy() != null && hostdto.getCreatedBy().isBlank()) {
+							obj.setCreatedBy(hostdto.getCreatedBy());
+							flag = true;
+						}
+
+						if (hostdto.getModifiedBy() != null && hostdto.getModifiedBy().isBlank()) {
+							obj.setModifiedBy(hostdto.getModifiedBy());
+							flag = true;
+						}
+
+						obj.setModifiedDate(utility.dateSetter());
+						if (flag == true) {
+							if (hostRepository.save(obj) != null) {
+
+								logger.info("HostServiceImpl :: editHost : execution ended");
+								return hostConverter.entityToDto(obj);
+							} else
+								throw new InValidDataException("Host Not Updated.Please Check and Try Again");
+						} else
+							throw new InValidIdExcepetion("Please Check Enterd Data. And try Again");
+
+					} else
+						throw new NotFoundException("Host Not Aavailable. Please Check and Try Again");
+
+				} else
+					throw new InValidDataException("please provide Host details");
+
+			} else
+				throw new InValidIdExcepetion("entered id is null or not valid ,please enter correct id");
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
+		} catch (InValidDataException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidDataException(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"update host details using host id", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"update Host detsils using host id", e.getLocalizedMessage());
+		}
+
 	}
 
 	/**
@@ -262,32 +487,34 @@ public class HostServiceImpl implements HostServiceInterface {
 	public Host show(String hostId) {
 		logger.info("HostServiceImpl :: ShowHost : execution Started");
 		try {
-			if (!hostId.isBlank()) {
-				System.out.println("266");
+			if (!hostId.isBlank() && hostId != null) {
 				Host obj = hostRepository.findByHostIdAndIsActiveTrue(hostId);
-				System.out.println("obj" + obj);
 				if (obj != null) {
 					logger.info("HostServiceImpl :: showHost : execution ended");
 					return obj;
-				} else {
-					throw new NotAcceptableException("data of given id is not available in the database");
-				}
-			} else {
-				throw new NotFoundException("entered id is null or not valid ,please enter correct id");
-			}
+				} else
+					throw new NotFoundException("Host not available, please check and try again.");
+
+			} else
+				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
 		} catch (Exception e) {
 
-			HostException exception = new HostException();
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("its a not found exception");
-		} finally {
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(), "get host all details",
+					e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(), "get Host All detsils",
+					e.getLocalizedMessage());
 		}
 	}
 
@@ -295,6 +522,7 @@ public class HostServiceImpl implements HostServiceInterface {
 	 * Usage: Get/read the details of all the available Host
 	 * 
 	 * @return list of host objects
+	 * @throws HostException
 	 * @exception : throw : {@link @HostException} if any error occure while the
 	 *              code.
 	 * @exception : throW : {@link @NotAcceptableException} if object is null.
@@ -306,24 +534,25 @@ public class HostServiceImpl implements HostServiceInterface {
 		try {
 			List<Host> list = hostRepository.findAllByIsActiveTrue();
 			if (!list.isEmpty()) {
-				
+
 				logger.info("HostServiceImpl :: showAll : execution ended");
 				return list;
-			} else {
+			} else
 				throw new NotFoundException("data of given id is not available in the database");
-			}
-		} catch (HostException exception) {
 
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new HostException("something went wrong" , exception);
-		} finally {
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"Get list of all active host", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"Get list of all active host", e.getLocalizedMessage());
 		}
 	}
 
@@ -343,29 +572,35 @@ public class HostServiceImpl implements HostServiceInterface {
 	public List<Host> showByHostFirstName(String hostFirstName) {
 		logger.info("HostServiceImpl :: showByHostFirstName : execution Started");
 		try {
-			if (!hostFirstName.isBlank()) {
+			if (!hostFirstName.isBlank() && hostFirstName != null) {
 				List<Host> list = hostRepository.findByHostFirstNameAndIsActiveTrue(utility.sanitize(hostFirstName));
 				if (!list.isEmpty()) {
-					
+
 					logger.info("HostServiceImpl :: showByHostFirstName : execution ended");
 					return list;
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
-			} else
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-		} catch (HostException exception) {
+				} else
+					throw new NotFoundException("Host not avavilable, please check and try again");
 
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
+			} else
+				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get host by host first name", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get Host by host first name", e.getLocalizedMessage());
 		}
 	}
 
@@ -384,29 +619,35 @@ public class HostServiceImpl implements HostServiceInterface {
 	public List<Host> showByHostLastName(String hostLastName) {
 		logger.info("HostServiceImpl :: showByHostLastName : execution Started");
 		try {
-			if (!hostLastName.isBlank()) {
+			if (!hostLastName.isBlank() && hostLastName != null) {
 				List<Host> list = hostRepository.findByHostLastNameAndIsActiveTrue(utility.sanitize(hostLastName));
 				if (!list.isEmpty()) {
-					
+
 					logger.info("HostServiceImpl :: showByHostLastName : execution ended");
 					return list;
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
-			} else
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-		} catch (HostException exception) {
+				} else
+					throw new NotFoundException("Host not avavilable, please check and try again");
 
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
+			} else
+				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get host by host last name", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get Host by host last name", e.getLocalizedMessage());
 		}
 	}
 
@@ -425,70 +666,35 @@ public class HostServiceImpl implements HostServiceInterface {
 	public List<Host> showByHostEmail(String hostEmail) {
 		logger.info("HostServiceImpl :: showByHostEmail : execution started");
 		try {
-			if (!hostEmail.isBlank()) {
+			if (!hostEmail.isBlank() && hostEmail != null) {
 				List<Host> list = hostRepository.findByHostEmailAndIsActiveTrue(hostEmail);
 				if (!list.isEmpty()) {
-					
+
 					logger.info("HostServiceImpl :: showByHostEmail : execution ended");
 					return list;
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
+				} else
+					throw new NotFoundException("Host not avavilable, please check and try again");
+
 			} else
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-		} catch (HostException exception) {
+				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
 
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
-		}
-	}
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
 
-	/**
-	 * Usage: Get the host object/ details by created date
-	 * 
-	 * @param createdBy
-	 * @return list of host object with similar created date
-	 * @exception : throw : {@link @HostException} if any error occure while the
-	 *              code.
-	 * @exception : throw : {@link @NotFoundException} if parameter is blank.
-	 * @exception : throW : {@link @NotAcceptableException} if object is null.
-	 */
-	@Transactional
-	@Override
-	public List<Host> showByHostCreatedBy(String createdBy) {
-		logger.info("HostServiceImpl :: createdBy : execution started");
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
 
-		try {
-			if (!createdBy.isBlank()) {
-				List<Host> list = hostRepository.findByCreatedByAndIsActiveTrue(utility.sanitize(createdBy));
-				if (!list.isEmpty()) {
-					logger.info("HostServiceImpl :: createdBy : execution ended");
-					return list;
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
-			} else
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-		} catch (HostException exception) {
+		} catch (Exception e) {
 
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get host by host Email id", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get Host by host Email id", e.getLocalizedMessage());
 		}
 	}
 
@@ -508,251 +714,36 @@ public class HostServiceImpl implements HostServiceInterface {
 		logger.info("HostServiceImpl :: showByHostCity : execution started");
 
 		try {
-			if (!hostCity.isBlank()) {
+			if (!hostCity.isBlank() && hostCity != null) {
 				List<Host> list = hostRepository.findByHostCityAndIsActiveTrue(utility.sanitize(hostCity));
 				if (!list.isEmpty()) {
 					logger.info("HostServiceImpl :: showByHostCity : execution ended");
 					return list;
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
+				} else
+					throw new NotFoundException("Host not avavilable, please check and try again");
+
 			} else
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-		} catch (HostException exception) {
+				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
 
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(), "get host by host City",
+					e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(), "get Host by host City",
+					e.getLocalizedMessage());
 		}
 	}
-
-	/**
-	 * Usage: Get the host object/ details by modified date
-	 * 
-	 * @param modifiedBy
-	 * @return list of host object with similar modified date
-	 * @exception : throw : {@link @HostException} if any error occure while the
-	 *              code.
-	 * @exception : throw : {@link @NotFoundException} if parameter is blank.
-	 * @exception : throW : {@link @NotAcceptableException} if object is null.
-	 */
-	@Transactional
-	@Override
-	public List<Host> showByHostModifiedBy(String modifiedBy) {
-		logger.info("HostServiceImpl :: showByHostModifiedBy : execution started");
-
-		try {
-			if (!modifiedBy.isBlank()) {
-				List<Host> list = hostRepository.findByModifiedByAndIsActiveTrue(utility.sanitize(modifiedBy));
-				if (!list.isEmpty()) {
-					logger.info("HostServiceImpl :: showByHostModifiedBy : execution ended");
-					return list;
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
-			} else
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-		} catch (HostException exception) {
-
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
-		}
-	}
-
-	/**
-	 * Usage: Get the host object/ details by host full name
-	 * 
-	 * @param hostFirstName, hostMiddleName, hostLastName
-	 * @return list of host object with similar hostFullName
-	 * @exception : throw : {@link @HostException} if any error occure while the
-	 *              code.
-	 * @exception : throw : {@link @NotFoundException} if parameter is blank.
-	 * @exception : throW : {@link @NotAcceptableException} if object is null.
-	 */
-	@Transactional
-	@Override
-	public List<Host> showByFullName(String hostFirstName, String hostMiddleName, String hostLastName) {
-		logger.info("HostServiceImpl :: showByFullName : execution started");
-
-		try {
-			String fullName = hostFirstName;
-			if (hostMiddleName != null && !hostMiddleName.isEmpty()) {
-				fullName += " " + hostMiddleName;
-			}
-			fullName += " " + hostLastName;
-			
-			return hostRepository.findByHostFirstNameAndHostMiddleNameAndHostLastNameAndIsActiveTrue(utility.sanitize(hostFirstName),
-					utility.sanitize(hostMiddleName), utility.sanitize(hostLastName));
-		} catch (HostException exception) {
-
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
-		}
-	}
-
-	/**
-	 * Usage: delete the specific host using host Id
-	 * 
-	 * @param hostId
-	 * @return string message "host successfully deleted"
-	 * @exception : throw : {@link @HostException} if any error occure while the
-	 *              code.
-	 * @exception : throw : {@link @NotFoundException} if parameter is blank.
-	 * @exception : throW : {@link @NotAcceptableException} if object is null.
-	 */
-	@Transactional
-	@Override
-	public void remove(String hostId) {
-		logger.info("HostServiceImpl :: removeHost : execution started");
-
-		try {
-			if (!hostId.isBlank()) {
-				Host host = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
-				if (host != null) {
-					host.setActive(false);
-					hostRepository.save(host);
-					logger.info("HostServiceImpl :: removeHost : execution ended");
-
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
-			} else
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-		} catch (HostException exception) {
-
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
-		}
-	}
-
-	/**
-	 * Usage: update the host details
-	 * 
-	 * @param hostId, hostDto
-	 * @return string message "Data updated successfully"
-	 * @exception : throw : {@link @HostException} if any error occure while the
-	 *              code.
-	 * @exception : throw : {@link @NotFoundException} if parameter is blank.
-	 * @exception : throW : {@link @NotAcceptableException} if object is null.
-	 */
-	@Transactional
-	@Override
-	public HostDto edit(String hostId, HostDto hostdto) {
-		logger.info("HostServiceImpl :: editHost : execution started");
-		try {
-			Host host = hostConverter.dtoToEntity(hostdto);
-			if (!hostId.isBlank()) {
-
-				Host obj = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
-				if (obj != null) {
-
-					if (host.getHostFirstName() != null && hostdto.getHostFirstName().isBlank())
-						obj.setHostFirstName(hostdto.getHostFirstName());
-
-					if (host.getHostMiddleName() != null && hostdto.getHostMiddleName().isBlank())
-						obj.setHostMiddleName(hostdto.getHostMiddleName());
-
-					if (host.getHostLastName() != null && hostdto.getHostLastName().isBlank())
-						obj.setHostLastName(hostdto.getHostLastName());
-
-					if (host.getHostEmail() != null && hostdto.getHostEmail().isBlank())
-						obj.setHostEmail(hostdto.getHostEmail());
-
-					if (host.getHostContactNo() != null && hostdto.getHostContactNo().isBlank())
-						obj.setHostVehicleChargerType(hostdto.getHostContactNo());
-
-					if (host.getHostAddress() != null && hostdto.getHostAddress().isBlank())
-						obj.setHostAddress(hostdto.getHostAddress());
-
-					if (host.getHostVehicleRegistrationNo() != null && hostdto.getHostVehicleRegistrationNo().isBlank())
-						obj.setHostVehicleRegistrationNo(hostdto.getHostVehicleRegistrationNo());
-
-					if (host.getHostVehicleChargerType() != null && hostdto.getHostVehicleChargerType().isBlank())
-						obj.setHostVehicleChargerType(hostdto.getHostVehicleChargerType());
-
-					if (host.getHostCity() != null && hostdto.getHostCity().isBlank())
-						obj.setHostCity(hostdto.getHostCity());
-
-					if (hostdto.getCreatedBy() != null && hostdto.getCreatedBy().isBlank())
-						obj.setCreatedBy(hostdto.getCreatedBy());
-
-					if (hostdto.getModifiedBy() != null && hostdto.getModifiedBy().isBlank())
-						obj.setModifiedBy(hostdto.getModifiedBy());
-
-					obj.setModifiedDate(utility.dateSetter());
-
-					hostRepository.save(obj);
-					logger.info("HostServiceImpl :: editHost : execution ended");
-					return hostConverter.entityToDto(obj);
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
-			} else {
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-			}
-		} catch (HostException exception) {
-
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
-		}
-
-	}
-
-//	@Override
-//	public List<Settlement> getByHostIdAndSettlementDate(String hostId, String settlementDate) {
-//
-//		Criteria matchCriteria = Criteria.where("_id").is(hostId);
-//		Criteria matchCriteria2 = Criteria.where("settlements.settlementDate").is(settlementDate);
-//		GroupOperation groupOperation = Aggregation.group("_id").push("settlements").as("settlements");
-//
-//		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria),
-//				Aggregation.unwind("settlements"), Aggregation.match(matchCriteria2), groupOperation,
-//				Aggregation.project("_id", "settlements"));
-//
-//		Host host = mongoTemplate.aggregate(aggregation, "host", Host.class).getUniqueMappedResult();
-//		List<Settlement> settlements = host.getSettlements();
-//		System.out.println(settlements);
-//		return settlements;
-//	}
 
 	/**
 	 * Usage: Get the list of settlement object/ details by host id and settlement
@@ -770,32 +761,44 @@ public class HostServiceImpl implements HostServiceInterface {
 	public List<Settlement> getByHostIdAndSettlementsDate(String hostId, String settlementDate) {
 		logger.info("HostServiceImpl :: getByHostIdAndSettlementsDate : execution started");
 		try {
-			if (!hostId.isBlank() && hostId != null) {
+			if (!hostId.isBlank() && hostId != null && !settlementDate.isBlank() && settlementDate != null) {
+
 				Host host = hostRepository.findBySettlementMatching(utility.sanitize(hostId), settlementDate);
 
 				if (host != null) {
 					List<Settlement> settlements = host.getSettlements();
-					logger.info("HostServiceImpl :: getByHostIdAndSettlementsDate : execution ended");
-					return settlements;
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
-			} else {
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-			}
-		} catch (HostException exception) {
+					if (!settlements.isEmpty()) {
+						logger.info("HostServiceImpl :: getByHostIdAndSettlementsDate : execution ended");
+						return settlements;
 
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
+					} else
+						throw new NotFoundException("settlements not found, please check and try again");
+
+				} else
+					throw new NotFoundException("Host not avavilable, please check and try again");
+
+			} else
+				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get settlement by hostId and settlement date", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get settlement by hostId and settlement date", e.getLocalizedMessage());
 		}
+
 	}
 
 	/**
@@ -820,25 +823,96 @@ public class HostServiceImpl implements HostServiceInterface {
 				if (host != null) {
 					logger.info("HostServiceImpl :: getHostDetailsById : execution ended");
 					return host;
-				} else {
-					throw new NotFoundException("data of given id is not available in the database");
-				}
-			} else {
-				throw new NotAcceptableException("entered id is null or not valid ,please enter correct id");
-			}
-		} catch (HostException exception) {
+				} else
+					throw new NotFoundException("Host not avavilable, please check and try again");
 
-			exception.setErrorCode("404");
-			exception.setStatusCode(null);
-			exception.setStatus(null);
-			exception.setMethodName("HOST servive: add method");
-			exception.setLineNumber("Line No 86");
-			exception.setFunctionality("add the host");
-			exception.setMessage(null);
-			logger.error(exception);
-			throw new MethodFailureException("something went wrong");
-		} finally {
+			} else
+				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get only host deatils by host id", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get only host details by host id", e.getLocalizedMessage());
 		}
+	}
+
+	/**
+	 * Usage: Get list of settlement using host id details
+	 * 
+	 * @param hostId
+	 * @return settlement list
+	 * @exception : throw : {@link @HostException} if any error occure while the
+	 *              code.
+	 * @exception : throw : {@link @NotFoundException} if parameter is blank.
+	 * @exception : throW : {@link @NotAcceptableException} if object is null.
+	 */
+	@Transactional
+	@Override
+	public List<Settlement> getSettlementByHostId(String hostId) {
+		try {
+			if (hostId != null && !hostId.isBlank()) {
+				Host host = hostRepository.findSettlementByHostId(hostId);
+				if (host != null) {
+
+					List<Settlement> settlements = host.getSettlements();
+					List<Settlement> finaList = new ArrayList<>();
+					if (!settlements.isEmpty()) {
+						for (Settlement settlement : settlements) {
+							if (settlement.isActive() == true) {
+								finaList.add(settlement);
+							}
+						}
+						if (!finaList.isEmpty()) {
+							return finaList;
+						} else
+							throw new NotFoundException(
+									"Settlements Not Found, settlements with provided Id does not exist");
+
+					} else
+						throw new InValidDataException(
+								"Settlements Not Found, settlements with provided Id does not exist");
+				} else
+					throw new NotFoundException("Host not Found, please provide correct Host Id and try again");
+
+			} else
+				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
+		} catch (InValidDataException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidDataException(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get all settlement deatils of specific by host id", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get all settlements details of specific by host id", e.getLocalizedMessage());
+		}
+
 	}
 
 }
