@@ -253,7 +253,7 @@ public class HostController {
 		return ResponseEntity.ok(hostServiceImpl.getHostDetailsById(hostId));
 	}
 	
-	@GetMapping("/getSettlemetByHostId")
+	@GetMapping("/getSettlementByHostId")
 	public ResponseEntity<List<Settlement>> getSettlementsbyHostId(@RequestParam("hostId") String hostId){
 		log.info("HostController :: getSettlementByHostId : Request Param {hostId} ");
 		return ResponseEntity.ok(hostServiceImpl.getSettlementByHostId(hostId));
