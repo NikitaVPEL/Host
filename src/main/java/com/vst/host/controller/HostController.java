@@ -34,7 +34,7 @@ import com.vst.host.service.HostServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@CrossOrigin
+@CrossOrigin(allowedHeaders = "*")
 @RestController
 @RequestMapping("manageHost")
 public class HostController {
@@ -230,7 +230,7 @@ public class HostController {
 
 	@GetMapping("/getSettlementByDate")
 	public List<Settlement> getSettlementsByDate(@RequestParam("hostId") String hostId,
-			@RequestParam("settlementByDate") String settlementDate) {
+			@RequestParam("settlementDate") String settlementDate) {
 
 		log.info("HostController :: getSettlementsByDate : Request Param {hostId}{settlementDate} ");
 		List<Settlement> settlements = hostServiceImpl.getByHostIdAndSettlementsDate(hostId, settlementDate);

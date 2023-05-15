@@ -862,6 +862,7 @@ public class HostServiceImpl implements HostServiceInterface {
 	@Transactional
 	@Override
 	public List<Settlement> getSettlementByHostId(String hostId) {
+		logger.info("HostServiceImpl :: getSettlementByHostId : execution Started");
 		try {
 			if (hostId != null && !hostId.isBlank()) {
 				Host host = hostRepository.findSettlementByHostId(hostId);
@@ -876,6 +877,7 @@ public class HostServiceImpl implements HostServiceInterface {
 							}
 						}
 						if (!finaList.isEmpty()) {
+							logger.info("HostServiceImpl :: getSettlementByHostId : execution ended");
 							return finaList;
 						} else
 							throw new NotFoundException(
