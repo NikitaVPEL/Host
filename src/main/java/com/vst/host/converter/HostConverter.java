@@ -1,7 +1,7 @@
 package com.vst.host.converter;
 
 /**
-* Host converter class is to convert the dataof dto class to entity and entity class to dto to not expose the sensitive information.
+* Host converter class is to convert the data of dto class to entity and entity class to dto to not expose the sensitive information.
 *
 * @author Nikita Chakole <nikita.chakole@vpel.in>
 * @since  21/12/2022

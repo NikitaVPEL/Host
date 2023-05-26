@@ -3,7 +3,7 @@ package com.vst.host.model;
 /**
 * it is a container class which contain the data of application.
 *
-* *Inherited from : {@link : @Settlement , @Wallet}
+* Inherited from : {@link : @Settlement , @Wallet}
 * 
 * @author Nikita Chakole <nikita.chakole@vpel.in>
 * @since  21/12/2022
