@@ -2,11 +2,12 @@ package com.vst.host.service;
 
 /**
 * Service layer to write the business logic and throw the exception. 
+
 *
 * Inherited from : {@link : @HostServiceInterface }
 *
-* @author Nikita Chakole <nikita.chakole@vpel.in>
-* @since  21/12/2022
+* @author snehal matke <snehal.matke@vpel.in>
+* @since  31/05/2023
 */
 
 import java.util.ArrayList;
@@ -18,16 +19,20 @@ import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.vst.host.converter.HostConverter;
 import com.vst.host.converter.SettlementConverter;
 import com.vst.host.converter.WalletConverter;
 import com.vst.host.dto.HostDto;
 import com.vst.host.dto.SettlementDto;
+import com.vst.host.dto.UserDto;
 import com.vst.host.dto.WalletDto;
 import com.vst.host.exception.DataBaseClosedException;
 import com.vst.host.exception.HostException;
@@ -42,12 +47,14 @@ import com.vst.host.repository.HostRepository;
 import com.vst.host.utils.Utility;
 import com.zaxxer.hikari.HikariDataSource;
 
-
 @Service
 public class HostServiceImpl implements HostServiceInterface {
 
 	@Autowired
 	HostRepository hostRepository;
+
+	@Autowired
+	private Environment environment;
 
 	@Autowired
 	HostConverter hostConverter;
@@ -362,115 +369,112 @@ public class HostServiceImpl implements HostServiceInterface {
 	public HostDto edit(String hostId, HostDto hostdto) {
 		logger.info("HostServiceImpl :: editHost : execution started");
 		try {
-			if (!hostId.isBlank() && hostId != null) {
+			if (hostId != null && !hostId.isBlank()) {
 				if (hostdto != null) {
-
 					Host host = hostConverter.dtoToEntity(hostdto);
 					Host obj = hostRepository.findByHostIdAndIsActiveTrue(utility.sanitize(hostId));
 					if (obj != null) {
-
 						boolean flag = false;
 
-						if (host.getHostFirstName() != null && hostdto.getHostFirstName().isBlank()) {
+						if (hostdto.getHostFirstName() != null && !hostdto.getHostFirstName().isBlank()) {
 							obj.setHostFirstName(hostdto.getHostFirstName());
 							flag = true;
 						}
 
-						if (host.getHostMiddleName() != null && hostdto.getHostMiddleName().isBlank()) {
+						if (hostdto.getHostMiddleName() != null && !hostdto.getHostMiddleName().isBlank()) {
 							obj.setHostMiddleName(hostdto.getHostMiddleName());
 							flag = true;
 						}
 
-						if (host.getHostLastName() != null && hostdto.getHostLastName().isBlank()) {
+						if (hostdto.getHostLastName() != null && !hostdto.getHostLastName().isBlank()) {
 							obj.setHostLastName(hostdto.getHostLastName());
 							flag = true;
 						}
 
-						if (host.getHostEmail() != null && hostdto.getHostEmail().isBlank()) {
+						if (hostdto.getHostEmail() != null && !hostdto.getHostEmail().isBlank()) {
 							obj.setHostEmail(hostdto.getHostEmail());
 							flag = true;
 						}
 
-						if (host.getHostContactNo() != null && hostdto.getHostContactNo().isBlank()) {
+						if (hostdto.getHostContactNo() != null && !hostdto.getHostContactNo().isBlank()) {
 							obj.setHostVehicleChargerType(hostdto.getHostContactNo());
 							flag = true;
 						}
 
-						if (host.getHostAddress() != null && hostdto.getHostAddress().isBlank()) {
+						if (hostdto.getHostAddress() != null && !hostdto.getHostAddress().isBlank()) {
 							obj.setHostAddress(hostdto.getHostAddress());
 							flag = true;
 						}
 
-						if (host.getHostVehicleRegistrationNo() != null
-								&& hostdto.getHostVehicleRegistrationNo().isBlank()) {
+						if (hostdto.getHostVehicleRegistrationNo() != null
+								&& !hostdto.getHostVehicleRegistrationNo().isBlank()) {
 							obj.setHostVehicleRegistrationNo(hostdto.getHostVehicleRegistrationNo());
 							flag = true;
 						}
 
-						if (host.getHostVehicleChargerType() != null && hostdto.getHostVehicleChargerType().isBlank()) {
+						if (hostdto.getHostVehicleChargerType() != null && !hostdto.getHostVehicleChargerType().isBlank()) {
 							obj.setHostVehicleChargerType(hostdto.getHostVehicleChargerType());
 							flag = true;
 						}
 
-						if (host.getHostCity() != null && hostdto.getHostCity().isBlank()) {
+						if (hostdto.getHostCity() != null && !hostdto.getHostCity().isBlank()) {
 							obj.setHostCity(hostdto.getHostCity());
 							flag = true;
 						}
 
-						if (hostdto.getCreatedBy() != null && hostdto.getCreatedBy().isBlank()) {
+						if (hostdto.getCreatedBy() != null && !hostdto.getCreatedBy().isBlank()) {
 							obj.setCreatedBy(hostdto.getCreatedBy());
 							flag = true;
 						}
 
-						if (hostdto.getModifiedBy() != null && hostdto.getModifiedBy().isBlank()) {
+						if (hostdto.getModifiedBy() != null && !hostdto.getModifiedBy().isBlank()) {
 							obj.setModifiedBy(hostdto.getModifiedBy());
 							flag = true;
 						}
 
 						obj.setModifiedDate(utility.dateSetter());
-						if (flag == true) {
-							if (hostRepository.save(obj) != null) {
-
+						
+						if (flag) {
+							Host updatedHost = hostRepository.save(obj);
+							if (updatedHost != null) {
 								logger.info("HostServiceImpl :: editHost : execution ended");
-								return hostConverter.entityToDto(obj);
-							} else
-								throw new InValidDataException("Host Not Updated.Please Check and Try Again");
-						} else
-							throw new InValidIdExcepetion("Please Check Enterd Data. And try Again");
-
-					} else
-						throw new NotFoundException("Host Not Aavailable. Please Check and Try Again");
-
-				} else
-					throw new InValidDataException("please provide Host details");
-
-			} else
-				throw new InValidIdExcepetion("entered id is null or not valid ,please enter correct id");
-
+								return hostConverter.entityToDto(updatedHost);
+							} else {
+								throw new InValidDataException("Host not updated. Please check and try again.");
+							}
+						} else {
+							throw new InValidDataException("No valid host details provided for update.");
+						}
+					} else {
+						throw new NotFoundException("Host not available. Please check and try again.");
+					}
+				} else {
+					throw new InValidDataException("Please provide host details.");
+				}
+			} else {
+				throw new InValidIdExcepetion("Entered ID is null or not valid. Please enter a correct ID.");
+			}
 		} catch (NotFoundException e) {
 			logger.error(e.getLocalizedMessage());
 			throw new NotFoundException(e.getLocalizedMessage());
-
 		} catch (InValidIdExcepetion e) {
 			logger.error(e.getLocalizedMessage());
 			throw new InValidIdExcepetion(e.getLocalizedMessage());
-
 		} catch (InValidDataException e) {
 			logger.error(e.getLocalizedMessage());
 			throw new InValidDataException(e.getLocalizedMessage());
-
 		} catch (Exception e) {
-
 			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
 					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
-					"update host details using host id", e.getLocalizedMessage());
+					"Update host details using host ID", e.getLocalizedMessage());
 
 			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
 					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
-					"update Host detsils using host id", e.getLocalizedMessage());
+					"Update host details using host ID", e.getLocalizedMessage());
 		}
-
 	}
+
+	
 
 	/**
 	 * Usage: Get the host object/ details by host Id
@@ -745,6 +749,42 @@ public class HostServiceImpl implements HostServiceInterface {
 		}
 	}
 
+	@Override
+	public Host showByHostContactNo(String hostContactNo) {
+		logger.info("HostServiceImpl :: showByHostCity : execution started");
+
+		try {
+			if (!hostContactNo.isBlank() && hostContactNo != null) {
+				Host host = hostRepository.findByHostContactNoAndIsActiveTrue(utility.sanitize(hostContactNo));
+				if (host != null) {
+					logger.info("HostServiceImpl :: showByHostContactNo : execution ended");
+					return host;
+				}
+				return null;
+
+			} else
+				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
+
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+
+		} catch (Exception e) {
+
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get host by host Contact Number", e.getLocalizedMessage());
+
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"get Host by host Contact Number", e.getLocalizedMessage());
+		}
+	}
+
 	/**
 	 * Usage: Get the list of settlement object/ details by host id and settlement
 	 * date
@@ -824,7 +864,7 @@ public class HostServiceImpl implements HostServiceInterface {
 					logger.info("HostServiceImpl :: getHostDetailsById : execution ended");
 					return host;
 				} else
-					throw new NotFoundException("Host not avavilable, please check and try again");
+					throw new NotFoundException("Host not available, please check and try again");
 
 			} else
 				throw new InValidIdExcepetion("Invalid ID. The ID provided is not valid. Please check and try again.");
@@ -917,4 +957,41 @@ public class HostServiceImpl implements HostServiceInterface {
 
 	}
 
+	@Override
+	public void createNewHostByContactNo(String phoneNumber) {
+		Host host = new Host();
+		host.setHostContactNo(phoneNumber);
+		host.setHostId("HST" + utility.idGenerator());
+		host.setActive(true);
+		hostRepository.save(host);
+	}
+
+	 public void createHostAccountByUserDetails(String contactNo) {
+	        UserDto user = getUserDataByContactNo(contactNo);
+
+	        Host host = new Host();
+	        host.setActive(true);
+			host.setHostId("HST" + utility.idGenerator());
+	        host.setHostFirstName(user.getUserFirstName());
+	        host.setHostLastName(user.getUserLastName());
+	        host.setHostContactNo(user.getUserContactNo());
+	        host.setHostEmail(user.getUserEmail());
+	        host.setHostAddress(user.getUserAddress());
+	        host.setHostCity(user.getUserCity());
+
+	        hostRepository.save(host);
+	    }
+
+	    private UserDto getUserDataByContactNo(String contactNo) {
+	        String url = "http://192.168.0.41:8097/manageUser/getUserDataByContactNo?userContactNo=" + contactNo;
+
+	        RestTemplate restTemplate = new RestTemplate();
+	        ResponseEntity<UserDto> response = restTemplate.exchange(url, HttpMethod.GET, null, UserDto.class);
+
+	        if (response.getStatusCode().is2xxSuccessful()) {
+	            return response.getBody();
+	        } else {
+	            return null;
+	        }
+	    }
 }

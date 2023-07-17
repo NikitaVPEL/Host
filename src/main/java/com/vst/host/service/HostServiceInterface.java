@@ -1,12 +1,13 @@
 package com.vst.host.service;
 
 /**
-* service intrface 
+* service interface 
+
 *
 * *Inherited in : {@link : @HostServiceImpl}
 *
-* @author Nikita Chakole <nikita.chakole@vpel.in>
-* @since  21/12/2022
+* @author snehal matke <snehal.matke@vpel.in>
+* @since  31/05/2023
 */
 
 import java.util.List;
@@ -32,6 +33,8 @@ public interface HostServiceInterface {
 	public List<Host> showByHostLastName(String hostLastName);
 
 	public List<Host> showByHostEmail(String hostEmail);
+	
+	public Host showByHostContactNo(String hostContactNo);
 
 	public List<Host> showByHostCity(String hostCity);
 
@@ -58,6 +61,10 @@ public interface HostServiceInterface {
 	public Host getHostDetailsById(String hostId);
 	
 	public List<Settlement> getSettlementByHostId(String hostId);
+	
+	public void createNewHostByContactNo(String phoneNumber);
+	
+
 
 	
 }

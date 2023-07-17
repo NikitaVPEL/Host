@@ -261,4 +261,23 @@ public class HostController {
 		return ResponseEntity.ok(hostServiceImpl.getSettlementByHostId(hostId));
 	}
 
+	
+	@PostMapping("/createHost")
+    public ResponseEntity<String> saveHostByContactNo(
+            @RequestParam("phoneNumber") String phoneNumber) {
+
+        hostServiceImpl.createNewHostByContactNo(phoneNumber);
+        return ResponseEntity.ok("Host created");
+    }
+ 
+ 
+ @PostMapping("/createAccountByUserContactNo")
+    public ResponseEntity<String> createHostAccountByUserDetails(@RequestParam("phoneNumber") String phoneNumber) {
+        try {
+            hostServiceImpl.createHostAccountByUserDetails(phoneNumber);
+            return ResponseEntity.ok("Host account created successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create host account");
+        }
+    }
 }
