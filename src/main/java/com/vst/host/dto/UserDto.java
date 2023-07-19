@@ -43,6 +43,8 @@ public class UserDto {
 	private String userPincode;
 
 	private String userProfilePhoto;
+	
+	private String password;
 
 	private Date createdDate;
 

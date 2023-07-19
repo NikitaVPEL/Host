@@ -32,7 +32,7 @@ public interface HostServiceInterface {
 
 	public List<Host> showByHostLastName(String hostLastName);
 
-	public List<Host> showByHostEmail(String hostEmail);
+	public Host showByHostEmail(String hostEmail);
 	
 	public Host showByHostContactNo(String hostContactNo);
 
@@ -63,6 +63,16 @@ public interface HostServiceInterface {
 	public List<Settlement> getSettlementByHostId(String hostId);
 	
 	public void createNewHostByContactNo(String phoneNumber);
+	
+    public HostDto updateHostByContactNo(String hostContactNo, HostDto hostdto);
+        
+    public String getPasswordByContactNo(String hostContactNo);
+    
+    public String getPasswordByEmail(String hostEmail);
+
+
+
+
 	
 
 

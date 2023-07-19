@@ -34,8 +34,6 @@ import lombok.ToString;
 @ToString
 public class HostDto {
 
-	@Transient 
-	public static final String SEQUENCE_NAME = "host_sequense";
 	
 	@Id
 	private String hostId;
@@ -70,20 +68,14 @@ public class HostDto {
 	@NotBlank(message = "Please Enter Valid Address")
 	private String hostAddress;
 	
-	@NotBlank(message = "Please Enter VehicleRegNo")
-	@NotNull(message = "Please Provide VehicleRegNo")
-	@Pattern(regexp ="^[A-Z]{2}\\s[0-9]{2}\\s[A-Z]{2}\\s[0-9]{4}$",message ="please Enter Correct VehicalRegNo ")
-	private String hostVehicleRegistrationNo;
-	
-	@NotNull(message = "Please Provide VehicleChargerType ")
-	@NotBlank(message ="Please Enter VehicleChargerType ")
-	private String hostVehicleChargerType;
+	private String hostImage;
 	
 	@NotNull(message = "Please Provide City")
 	@NotBlank(message = "Please Enter City")
 	@Pattern(regexp = "^[a-zA-Z]+$", message = " City should only contain letters") 
 	private String hostCity;
 	
+	private String password;
  
 	private Date createdDate;
 	
@@ -98,4 +90,5 @@ public class HostDto {
 	private WalletDto wallets;
 	
 	private List<SettlementDto> settlements;
+	
 }

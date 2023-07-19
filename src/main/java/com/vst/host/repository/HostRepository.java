@@ -35,7 +35,7 @@ public interface HostRepository extends MongoRepository<Host, String> {
 	List<Host> findByHostLastNameAndIsActiveTrue(String hostLastName);
 
 	// find the list of host with similar host email and currently active
-	List<Host> findByHostEmailAndIsActiveTrue(String hostEmail);
+	Host findByHostEmailAndIsActiveTrue(String hostEmail);
 
 	@Query(value = "{'hostContactNo': ?0, 'isActive': true}", fields = "{'wallets': 0, 'settlements': 0}")
 	Host findByHostContactNoAndIsActiveTrue(String hostContactNo);
