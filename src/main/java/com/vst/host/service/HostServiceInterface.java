@@ -65,6 +65,8 @@ public interface HostServiceInterface {
 	public void createNewHostByContactNo(String phoneNumber);
 	
     public HostDto updateHostByContactNo(String hostContactNo, HostDto hostdto);
+    
+    public HostDto updatePasswordByContactNo(String hostContactNo, HostDto hostdto);
         
     public String getPasswordByContactNo(String hostContactNo);
     

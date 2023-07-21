@@ -404,7 +404,7 @@ public class HostServiceImpl implements HostServiceInterface {
 							obj.setHostImage(hostdto.getHostImage());
 							flag = true;
 						}
-						
+
 						if (hostdto.getHostCity() != null && !hostdto.getHostCity().isBlank()) {
 							obj.setHostCity(hostdto.getHostCity());
 							flag = true;
@@ -416,7 +416,7 @@ public class HostServiceImpl implements HostServiceInterface {
 						}
 
 						obj.setModifiedDate(utility.dateSetter());
-						
+
 						if (flag) {
 							Host updatedHost = hostRepository.save(obj);
 							if (updatedHost != null) {
@@ -456,9 +456,6 @@ public class HostServiceImpl implements HostServiceInterface {
 					"Update host details using host ID", e.getLocalizedMessage());
 		}
 	}
-
-
-	
 
 	/**
 	 * Usage: Get the host object/ details by host Id
@@ -656,7 +653,7 @@ public class HostServiceImpl implements HostServiceInterface {
 		try {
 			if (!hostEmail.isBlank() && hostEmail != null) {
 				Host host = hostRepository.findByHostEmailAndIsActiveTrue(hostEmail);
-				if (host!=null) {
+				if (host != null) {
 
 					logger.info("HostServiceImpl :: showByHostEmail : execution ended");
 					return host;
@@ -950,161 +947,213 @@ public class HostServiceImpl implements HostServiceInterface {
 		hostRepository.save(host);
 	}
 
-	 public void createHostAccountByUserDetails(String contactNo) {
-	        UserDto user = getUserDataByContactNo(contactNo);
+	public void createHostAccountByUserDetails(String contactNo) {
+		UserDto user = getUserDataByContactNo(contactNo);
 
-	        Host host = new Host();
-	        host.setActive(true);
-			host.setHostId("HST" + utility.idGenerator());
-	        host.setHostFirstName(user.getUserFirstName());
-	        host.setHostLastName(user.getUserLastName());
-	        host.setHostContactNo(user.getUserContactNo());
-	        host.setHostEmail(user.getUserEmail());
-	        host.setHostAddress(user.getUserAddress());
-	        host.setHostCity(user.getUserCity());
+		Host host = new Host();
+		host.setActive(true);
+		host.setHostId("HST" + utility.idGenerator());
+		host.setHostFirstName(user.getUserFirstName());
+		host.setHostLastName(user.getUserLastName());
+		host.setHostContactNo(user.getUserContactNo());
+		host.setHostEmail(user.getUserEmail());
+		host.setHostAddress(user.getUserAddress());
+		host.setHostCity(user.getUserCity());
 
-	        hostRepository.save(host);
-	    }
+		hostRepository.save(host);
+	}
 
-	    private UserDto getUserDataByContactNo(String contactNo) {
-	        String url = "http://192.168.0.41:8097/manageUser/getUserDataByContactNo?userContactNo=" + contactNo;
+	private UserDto getUserDataByContactNo(String contactNo) {
+		String url = "http://192.168.0.41:8097/manageUser/getUserDataByContactNo?userContactNo=" + contactNo;
 
-	        RestTemplate restTemplate = new RestTemplate();
-	        ResponseEntity<UserDto> response = restTemplate.exchange(url, HttpMethod.GET, null, UserDto.class);
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<UserDto> response = restTemplate.exchange(url, HttpMethod.GET, null, UserDto.class);
 
-	        if (response.getStatusCode().is2xxSuccessful()) {
-	            return response.getBody();
-	        } else {
-	            return null;
-	        }
-	    }
-	    
-	    
-	    
-	    
-	    
-	    public HostDto updateHostByContactNo(String hostContactNo, HostDto hostdto) {
-			logger.info("HostServiceImpl :: editHost : execution started");
-			try {
-				if (hostContactNo != null && !hostContactNo.isBlank()) {
-					if (hostContactNo != null) {
-						Host host = hostConverter.dtoToEntity(hostdto);
-						Host obj = hostRepository.findByHostContactNoAndIsActiveTrue(hostContactNo);
-						if (obj != null) {
-							boolean flag = false;
+		if (response.getStatusCode().is2xxSuccessful()) {
+			return response.getBody();
+		} else {
+			return null;
+		}
+	}
 
-							if (hostdto.getHostFirstName() != null && !hostdto.getHostFirstName().isBlank()) {
-								obj.setHostFirstName(hostdto.getHostFirstName());
-								flag = true;
-							}
+	public HostDto updateHostByContactNo(String hostContactNo, HostDto hostdto) {
+		logger.info("HostServiceImpl :: editHost : execution started");
+		try {
+			if (hostContactNo != null && !hostContactNo.isBlank()) {
+				if (hostContactNo != null) {
+					Host host = hostConverter.dtoToEntity(hostdto);
+					Host obj = hostRepository.findByHostContactNoAndIsActiveTrue(hostContactNo);
+					if (obj != null) {
+						boolean flag = false;
 
-							if (hostdto.getHostMiddleName() != null && !hostdto.getHostMiddleName().isBlank()) {
-								obj.setHostMiddleName(hostdto.getHostMiddleName());
-								flag = true;
-							}
+						if (hostdto.getHostFirstName() != null && !hostdto.getHostFirstName().isBlank()) {
+							obj.setHostFirstName(hostdto.getHostFirstName());
+							flag = true;
+						}
 
-							if (hostdto.getHostLastName() != null && !hostdto.getHostLastName().isBlank()) {
-								obj.setHostLastName(hostdto.getHostLastName());
-								flag = true;
-							}
+						if (hostdto.getHostMiddleName() != null && !hostdto.getHostMiddleName().isBlank()) {
+							obj.setHostMiddleName(hostdto.getHostMiddleName());
+							flag = true;
+						}
 
-							if (hostdto.getHostEmail() != null && !hostdto.getHostEmail().isBlank()) {
-								obj.setHostEmail(hostdto.getHostEmail());
-								flag = true;
-							}
+						if (hostdto.getHostLastName() != null && !hostdto.getHostLastName().isBlank()) {
+							obj.setHostLastName(hostdto.getHostLastName());
+							flag = true;
+						}
 
-							if (hostdto.getHostAddress() != null && !hostdto.getHostAddress().isBlank()) {
-								obj.setHostAddress(hostdto.getHostAddress());
-								flag = true;
-							}
+						if (hostdto.getHostEmail() != null && !hostdto.getHostEmail().isBlank()) {
+							obj.setHostEmail(hostdto.getHostEmail());
+							flag = true;
+						}
 
-							if (hostdto.getHostImage() != null && !hostdto.getHostImage().isBlank()) {
-								obj.setHostImage(hostdto.getHostImage());
-								flag = true;
-							}
-							
-							if (hostdto.getHostCity() != null && !hostdto.getHostCity().isBlank()) {
-								obj.setHostCity(hostdto.getHostCity());
-								flag = true;
-							}
+						if (hostdto.getHostAddress() != null && !hostdto.getHostAddress().isBlank()) {
+							obj.setHostAddress(hostdto.getHostAddress());
+							flag = true;
+						}
 
-							if (hostdto.getPassword() != null && !hostdto.getPassword().isBlank()) {
-								obj.setPassword(hostdto.getPassword());
-								flag = true;
-							}
+						if (hostdto.getHostImage() != null && !hostdto.getHostImage().isBlank()) {
+							obj.setHostImage(hostdto.getHostImage());
+							flag = true;
+						}
 
-							obj.setModifiedDate(utility.dateSetter());
-							
-							if (flag) {
-								Host updatedHost = hostRepository.save(obj);
-								if (updatedHost != null) {
-									logger.info("HostServiceImpl :: editHost : execution ended");
-									return hostConverter.entityToDto(updatedHost);
-								} else {
-									throw new InValidDataException("Host not updated. Please check and try again.");
-								}
+						if (hostdto.getHostCity() != null && !hostdto.getHostCity().isBlank()) {
+							obj.setHostCity(hostdto.getHostCity());
+							flag = true;
+						}
+
+						if (hostdto.getPassword() != null && !hostdto.getPassword().isBlank()) {
+							obj.setPassword(hostdto.getPassword());
+							flag = true;
+						}
+
+						obj.setModifiedDate(utility.dateSetter());
+
+						if (flag) {
+							Host updatedHost = hostRepository.save(obj);
+							if (updatedHost != null) {
+								logger.info("HostServiceImpl :: editHost : execution ended");
+								return hostConverter.entityToDto(updatedHost);
 							} else {
-								throw new InValidDataException("No valid host details provided for update.");
+								throw new InValidDataException("Host not updated. Please check and try again.");
 							}
 						} else {
-							throw new NotFoundException("Host not available. Please check and try again.");
+							throw new InValidDataException("No valid host details provided for update.");
 						}
 					} else {
-						throw new InValidDataException("Please provide host details.");
+						throw new NotFoundException("Host not available. Please check and try again.");
 					}
 				} else {
-					throw new InValidIdExcepetion("Entered contactno is null or not valid. Please enter a correct contactno.");
+					return null;
 				}
-			} catch (NotFoundException e) {
-				logger.error(e.getLocalizedMessage());
-				throw new NotFoundException(e.getLocalizedMessage());
-			} catch (InValidIdExcepetion e) {
-				logger.error(e.getLocalizedMessage());
-				throw new InValidIdExcepetion(e.getLocalizedMessage());
-			} catch (InValidDataException e) {
-				logger.error(e.getLocalizedMessage());
-				throw new InValidDataException(e.getLocalizedMessage());
-			} catch (Exception e) {
-				logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
-						e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
-						"Update host details using host ID", e.getLocalizedMessage());
-
-				throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
-						e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
-						"Update host details using host ID", e.getLocalizedMessage());
+			} else {
+				throw new InValidIdExcepetion(
+						"Entered contactno is null or not valid. Please enter a correct contactno.");
 			}
-	    }
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+		} catch (InValidDataException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidDataException(e.getLocalizedMessage());
+		} catch (Exception e) {
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"Update host details using host ID", e.getLocalizedMessage());
 
-	    
-	    
-	    
-	    public String getPasswordByContactNo(String hostContactNo) {
-			logger.info("HostServiceImpl :: getPasswordByContactNo : execution started");
-		
-				if (!hostContactNo.isBlank() && hostContactNo != null) {
-					Host host = hostRepository.findByHostContactNoAndIsActiveTrue(hostContactNo);
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"Update host details using host ID", e.getLocalizedMessage());
+		}
+	}
 
-					if (host != null) {
-						logger.info("HostServiceImpl :: getPasswordByContactNo : execution ended");
-						return host.getPassword();
+	public String getPasswordByContactNo(String hostContactNo) {
+		logger.info("HostServiceImpl :: getPasswordByContactNo : execution started");
+
+		if (!hostContactNo.isBlank() && hostContactNo != null) {
+			Host host = hostRepository.findByHostContactNoAndIsActiveTrue(hostContactNo);
+
+			if (host != null) {
+				logger.info("HostServiceImpl :: getPasswordByContactNo : execution ended");
+				return host.getPassword();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public String getPasswordByEmail(String hostEmail) {
+		logger.info("HostServiceImpl :: getPasswordByContactNo : execution started");
+
+		if (!hostEmail.isBlank() && hostEmail != null) {
+			Host host = hostRepository.findByHostEmailAndIsActiveTrue(hostEmail);
+
+			if (host != null) {
+				logger.info("HostServiceImpl :: getPasswordByContactNo : execution ended");
+				return host.getPassword();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public HostDto updatePasswordByContactNo(String hostContactNo, HostDto hostdto) {
+		logger.info("HostServiceImpl :: editHost : execution started");
+		try {
+			if (hostContactNo != null && !hostContactNo.isBlank()) {
+				if (hostContactNo != null) {
+					Host host = hostConverter.dtoToEntity(hostdto);
+					Host obj = hostRepository.findByHostContactNoAndIsActiveTrue(hostContactNo);
+					if (obj != null) {
+						boolean flag = false;
+
+						if (hostdto.getPassword() != null && !hostdto.getPassword().isBlank()) {
+							obj.setPassword(hostdto.getPassword());
+							flag = true;
+						}
+
+						obj.setModifiedDate(utility.dateSetter());
+
+						if (flag) {
+							Host updatedHost = hostRepository.save(obj);
+							if (updatedHost != null) {
+								logger.info("HostServiceImpl :: editHost : execution ended");
+								return hostConverter.entityToDto(updatedHost);
+							} else {
+								throw new InValidDataException("Host not updated. Please check and try again.");
+							}
+						} else {
+							throw new InValidDataException("No valid host details provided for update.");
+						}
+					} else {
+						throw new NotFoundException("Host not available. Please check and try again.");
 					}
+				} else {
+					return null;
 				}
-				return null;
-	    }
-
-		@Override
-		public String getPasswordByEmail(String hostEmail) {
-			logger.info("HostServiceImpl :: getPasswordByContactNo : execution started");
-			
-			if (!hostEmail.isBlank() && hostEmail != null) {
-				Host host = hostRepository.findByHostEmailAndIsActiveTrue(hostEmail);
-
-				if (host != null) {
-					logger.info("HostServiceImpl :: getPasswordByContactNo : execution ended");
-					return host.getPassword();
-				}
+			} else {
+				throw new InValidIdExcepetion(
+						"Entered contactno is null or not valid. Please enter a correct contactno.");
 			}
-			return null;
-    }
-}
+		} catch (NotFoundException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new NotFoundException(e.getLocalizedMessage());
+		} catch (InValidIdExcepetion e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidIdExcepetion(e.getLocalizedMessage());
+		} catch (InValidDataException e) {
+			logger.error(e.getLocalizedMessage());
+			throw new InValidDataException(e.getLocalizedMessage());
+		} catch (Exception e) {
+			logger.error("HST001", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"Update host details using host ID", e.getLocalizedMessage());
 
+			throw new HostException("502", "ManageHost", e.getStackTrace()[0].getClassName(),
+					e.getStackTrace()[0].getMethodName(), e.getStackTrace()[0].getLineNumber(),
+					"Update host details using host ID", e.getLocalizedMessage());
+		}
+	}
+}

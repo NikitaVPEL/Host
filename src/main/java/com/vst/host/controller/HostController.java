@@ -122,7 +122,7 @@ public class HostController {
 	 * @param hostEmail
 	 * @return Http response and list of host object with similar Host email
 	 */
-	@GetMapping("/getHostEmail")
+	@GetMapping("/getHostByEmail")
 	public ResponseEntity<Host> getByEmail(@RequestParam("hostEmail") String hostEmail) {
 		log.info("HostController :: getByEmail : Request Param {hostEmail} ");
 
@@ -152,6 +152,7 @@ public class HostController {
 		log.info("HostController :: getByHostCity : Request @param {hostContactNo} ");
 		return ResponseEntity.ok(hostServiceImpl.showByHostContactNo(hostContactNo));
 	}
+
 	
 	
 	
@@ -291,10 +292,19 @@ public class HostController {
 	 
 	 
 	 @PutMapping("/updateHostByContactNo")
-		public ResponseEntity<String> updateHostByContactNo(@RequestParam("hostContactNo") String hostId, @RequestBody HostDto hostDto) {
+		public ResponseEntity<String> updateHostByContactNo(@RequestParam("hostContactNo") String hostContactNo, @RequestBody HostDto hostDto) {
 
 			log.info("HostController :: updateHost : Request Body {hostDto}, Request Param {hostId} ");
-			hostServiceImpl.updateHostByContactNo(hostId, hostDto);
+			hostServiceImpl.updateHostByContactNo(hostContactNo, hostDto);
+			return new ResponseEntity<>("Data updated successfully", HttpStatus.OK);
+		}
+	 
+	 
+	 @PutMapping("/updatePasswordByContactNo")
+		public ResponseEntity<String> updatePasswordByContactNo(@RequestParam("hostContactNo") String hostContactNo, @RequestBody HostDto hostDto) {
+
+			log.info("HostController :: updateHost : Request Body {hostDto}, Request Param {hostId} ");
+			hostServiceImpl.updatePasswordByContactNo(hostContactNo, hostDto);
 			return new ResponseEntity<>("Data updated successfully", HttpStatus.OK);
 		}
 	 
